@@ -1,21 +1,21 @@
 {
-  "// 说明": "基础配置模板 — 适合个人使用",
-  "ai": {
-    "provider": "qwen",
-    "model": "qwen-max"
+  "models": {
+    "providers": {
+      "dashscope": {
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "YOUR_DASHSCOPE_API_KEY",
+        "api": "openai-chat",
+        "models": [
+          { "id": "qwen3-max", "name": "Qwen3 Max" },
+          { "id": "qwen3.5-plus", "name": "Qwen3.5 Plus" },
+          { "id": "qwen3.5-flash", "name": "Qwen3.5 Flash" }
+        ]
+      }
+    }
   },
-  "tools": {
-    "read": { "enabled": true },
-    "write": { "enabled": true },
-    "edit": { "enabled": true },
-    "exec": { "enabled": true },
-    "process": { "enabled": true },
-    "web_search": { "enabled": true },
-    "web_fetch": { "enabled": true },
-    "memory_search": { "enabled": true },
-    "memory_get": { "enabled": true }
-  },
-  "approvals": {
-    "exec": { "enabled": true }
+  "agents": {
+    "defaults": {
+      "model": { "primary": "dashscope/qwen3.5-plus" }
+    }
   }
 }

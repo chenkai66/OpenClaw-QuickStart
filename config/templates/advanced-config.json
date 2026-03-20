@@ -1,50 +1,30 @@
 {
-  "// 说明": "高级配置模板 — 多渠道 + 定时任务 + 浏览器",
-  "ai": {
-    "provider": "anthropic",
-    "model": "claude-sonnet-4-20250514",
-    "apiKey": "替换为你的API Key"
+  "models": {
+    "providers": {
+      "dashscope": {
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "YOUR_DASHSCOPE_API_KEY",
+        "api": "openai-chat",
+        "models": [
+          { "id": "qwen3-max", "name": "Qwen3 Max" },
+          { "id": "qwen3.5-plus", "name": "Qwen3.5 Plus" },
+          { "id": "qwen3.5-flash", "name": "Qwen3.5 Flash" },
+          { "id": "deepseek-chat", "name": "DeepSeek Chat" },
+          { "id": "kimi-k2.5", "name": "Kimi K2.5" }
+        ]
+      }
+    }
   },
-  "channels": {
-    "dingtalk": {
-      "enabled": true,
-      "clientId": "替换",
-      "clientSecret": "替换",
-      "robotCode": "替换",
-      "corpId": "替换",
-      "agentId": "替换",
-      "dmPolicy": "open",
-      "groupPolicy": "open",
-      "messageType": "markdown"
-    },
-    "telegram": {
-      "enabled": false,
-      "botToken": "替换为你的Telegram Bot Token"
+  "agents": {
+    "defaults": {
+      "model": { "primary": "dashscope/qwen3.5-plus" }
     }
   },
   "tools": {
-    "read": { "enabled": true },
-    "write": { "enabled": true },
-    "edit": { "enabled": true },
-    "apply_patch": { "enabled": true },
-    "exec": { "enabled": true },
-    "process": { "enabled": true },
     "web_search": { "enabled": true },
     "web_fetch": { "enabled": true },
-    "browser": { "enabled": true },
-    "image": { "enabled": true },
-    "memory_search": { "enabled": true },
-    "memory_get": { "enabled": true },
-    "sessions_list": { "enabled": true },
-    "sessions_spawn": { "enabled": true },
-    "message": { "enabled": true },
-    "cron": { "enabled": true },
-    "tts": { "enabled": false }
-  },
-  "approvals": {
-    "exec": { "enabled": true }
-  },
-  "skills": {
-    "allowBundled": ["obsidian", "github"]
+    "exec": { "enabled": true, "approval": "auto" },
+    "memory": { "enabled": true },
+    "cron": { "enabled": true }
   }
 }

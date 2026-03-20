@@ -5,7 +5,7 @@
 OpenClaw TUI provides interactive chat in your terminal with full agent capabilities.
 
 ```
-🦞 OpenClaw 2026.2.26
+🦞 OpenClaw 2026.x.x
 session agent:main:main
 
 > your message here
@@ -14,7 +14,7 @@ session agent:main:main
 ## Launch
 
 ```bash
-# Set API key first (DashScope example)
+# Set API key (DashScope)
 export OPENAI_API_KEY="your-dashscope-api-key"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 
@@ -28,17 +28,24 @@ Or add env vars to `~/.zshrc` permanently, then just `openclaw tui`.
 
 | Command | Description |
 |---------|-------------|
-| `/model opus` | Switch to Claude Opus 4.6 |
-| `/model haiku` | Switch to Claude Haiku 4.5 |
+| `/model <name>` | Switch model (e.g. `/model qwen3-max`) |
 | `/help` | Show help |
 | `Ctrl+C` or `/exit` | Exit |
+
+## DashScope Available Models
+
+| Model ID | Best For | Context | Price (per M tokens) |
+|----------|----------|---------|---------------------|
+| `qwen3-max` | Complex tasks, strongest | 262K | Input 2.5 / Output 10 |
+| `qwen3.5-plus` | Balanced speed & quality | 1M | Input 0.8 / Output 4.8 |
+| `qwen3.5-flash` | Simple tasks, fastest | 1M | Input 0.2 / Output 2 |
+
+Third-party models also available on DashScope: DeepSeek, Kimi, GLM, MiniMax.
 
 ## Verify Models
 
 ```bash
 openclaw models list
-
-# Should show configured models with "yes" for auth
 ```
 
 ## Session Storage

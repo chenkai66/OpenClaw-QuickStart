@@ -1,12 +1,14 @@
 # Chapter 3.1: openclaw.json Configuration
 
-## Configuration File Location
+## Config Location
 
 ```
 ~/.openclaw/openclaw.json
 ```
 
-## Using Alibaba Cloud DashScope (Recommended for China)
+## Using Alibaba Cloud DashScope (Recommended)
+
+DashScope provides Qwen models and third-party models (DeepSeek, Kimi, GLM, MiniMax) via an OpenAI-compatible API.
 
 ```json
 {
@@ -18,19 +20,19 @@
         "api": "openai-chat",
         "models": [
           {
-            "id": "qwen-max",
-            "name": "Qwen Max",
-            "description": "Most capable Qwen model"
+            "id": "qwen3-max",
+            "name": "Qwen3 Max",
+            "description": "Strongest, best for complex tasks (262K context)"
+          },
+          {
+            "id": "qwen3.5-plus",
+            "name": "Qwen3.5 Plus",
+            "description": "Balanced quality, speed, cost (1M context)"
           },
           {
             "id": "qwen3.5-flash",
-            "name": "Qwen 3.5 Flash",
-            "description": "Fast and efficient"
-          },
-          {
-            "id": "qwen3.5-122b",
-            "name": "Qwen 3.5 122B",
-            "description": "Large model for complex tasks"
+            "name": "Qwen3.5 Flash",
+            "description": "Fastest, cheapest, simple tasks (1M context)"
           }
         ]
       }
@@ -39,21 +41,49 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "dashscope/qwen-max"
+        "primary": "dashscope/qwen3.5-plus"
       }
     }
   }
 }
 ```
 
-### Getting a DashScope API Key
+### Get API Key
 
 1. Visit https://dashscope.console.aliyun.com/
 2. Sign up / log in
-3. Create an API Key in the console
-4. Copy the key into the config
+3. Create an API Key and copy it
 
-## Using Anthropic API Directly
+## DashScope Model Catalog
+
+### Flagship Models
+
+| Model ID | Best For | Context | Input Price | Output Price |
+|----------|----------|---------|------------|-------------|
+| `qwen3-max` | Complex reasoning | 262K | 2.5 CNY/M | 10 CNY/M |
+| `qwen3.5-plus` | Balanced (recommended) | 1M | 0.8 CNY/M | 4.8 CNY/M |
+| `qwen3.5-flash` | Speed & cost | 1M | 0.2 CNY/M | 2 CNY/M |
+
+### Third-Party Models on DashScope
+
+| Provider | Models |
+|----------|--------|
+| DeepSeek | deepseek-chat, deepseek-reasoner |
+| Kimi | kimi-k2.5 |
+| GLM | glm-5 |
+| MiniMax | MiniMax-M2.5 |
+
+### Specialized Models
+
+| Model | Use Case |
+|-------|----------|
+| `qwen3.5-coder` | Code generation and understanding |
+| `qwen3.5-plus` (multimodal) | Image + video understanding |
+| `qwen-audio` | Speech understanding |
+
+## Using Anthropic API
+
+If you have an Anthropic API key:
 
 ```json
 {
@@ -63,91 +93,56 @@
         "apiKey": "YOUR_ANTHROPIC_API_KEY",
         "api": "anthropic-messages",
         "models": [
-          {
-            "id": "claude-sonnet-4-5-20260514",
-            "name": "Claude Sonnet 4.5",
-            "description": "Balanced performance and speed"
-          },
-          {
-            "id": "claude-opus-4-6-20260620",
-            "name": "Claude Opus 4.6",
-            "description": "Most capable model"
-          }
+          { "id": "claude-sonnet-4-5-20260514", "name": "Claude Sonnet 4.5" },
+          { "id": "claude-opus-4-6-20260620", "name": "Claude Opus 4.6" }
         ]
       }
     }
   },
   "agents": {
     "defaults": {
-      "model": {
-        "primary": "anthropic/claude-sonnet-4-5-20260514"
-      }
+      "model": { "primary": "anthropic/claude-sonnet-4-5-20260514" }
     }
   }
 }
 ```
 
-## Available Models
-
-### Alibaba Cloud Qwen (via DashScope)
-
-| Model ID | Description |
-|----------|-------------|
-| `qwen-max` | Most capable, best for complex tasks |
-| `qwen3.5-flash` | Fast, good for simple tasks |
-| `qwen3.5-122b` | Large parameter model |
-
-### Anthropic Claude
-
-| Model ID | Description |
-|----------|-------------|
-| `claude-sonnet-4-5-*` | Default balanced model |
-| `claude-opus-4-6-*` | Most powerful |
-| `claude-haiku-4-5-*` | Fastest, simplest tasks |
-
-## How to Switch Models
+## Switch Models
 
 ### In openclaw.json
 
-Change the `primary` model:
 ```json
-{ "agents": { "defaults": { "model": { "primary": "dashscope/qwen-max" } } } }
+{ "agents": { "defaults": { "model": { "primary": "dashscope/qwen3-max" } } } }
 ```
 
 ### At Runtime (TUI)
 
 ```bash
-/model opus     # Switch to Claude Opus
-/model haiku    # Switch to Claude Haiku
+/model qwen3-max
+/model qwen3.5-flash
 ```
 
 ## Environment Variables
 
-Add to `~/.bashrc` or `~/.zshrc`:
-
 ```bash
-# For Qwen models via DashScope
+# DashScope (recommended)
 export OPENAI_API_KEY="your-dashscope-api-key"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-# OR for Anthropic Claude
+# OR Anthropic
 export ANTHROPIC_API_KEY="your-anthropic-api-key"
-
-# OpenClaw session path (usually default is fine)
-export OPENCLAW_SESSIONS_PATH="$HOME/.openclaw/agents/main/sessions"
 ```
 
-## Verify Model Configuration
+## Verify
 
 ```bash
 openclaw models list
 ```
 
-## Security Best Practices
+## Security
 
 ```bash
 chmod 600 ~/.openclaw/openclaw.json
-cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak
 ```
 
 ---
