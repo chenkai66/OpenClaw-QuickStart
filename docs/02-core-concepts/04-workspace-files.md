@@ -1,28 +1,28 @@
-# 第2章·第4节：工作空间文件（SOUL / USER / AGENTS / HEARTBEAT）
+# Chapter 2.4: Workspace Files (SOUL / USER / AGENTS / HEARTBEAT / MEMORY)
 
-> OpenClaw 的"人格"全部定义在纯文本 Markdown 文件中。
-
----
-
-## 概述
-
-OpenClaw Agent 的行为由一组 Markdown 文件定义。每次启动时，Agent 按以下顺序加载这些文件：
-
-```
-1. SOUL.md     → 确认"我是谁"
-2. USER.md     → 确认"为谁服务"
-3. AGENTS.md   → 确认"团队成员"
-4. HEARTBEAT.md → 确认"自动行为"
-5. MEMORY.md   → 加载记忆索引
-```
+> OpenClaw's "personality" is defined entirely in plain-text Markdown files.
 
 ---
 
-## SOUL.md — 人格核心
+## Overview
 
-定义 Agent 的身份、价值观和行为风格。
+OpenClaw Agent behavior is defined by Markdown files in the workspace directory (`~/.openclaw/workspace/`). Each new session, the agent loads these files in order:
 
-**文件位置**：`~/.openclaw/agents/main/workspace/SOUL.md`
+```
+1. SOUL.md      -> "Who am I?"
+2. USER.md      -> "Who am I serving?"
+3. AGENTS.md    -> "How should I work?" (the behavior manual)
+4. HEARTBEAT.md -> "What automatic behaviors do I have?"
+5. MEMORY.md    -> Load memory index
+```
+
+---
+
+## SOUL.md — Core Personality
+
+Defines the agent's identity, values, and communication style.
+
+**Location**: `~/.openclaw/workspace/SOUL.md`
 
 ```markdown
 # Soul
@@ -34,7 +34,7 @@ OpenClaw Agent 的行为由一组 Markdown 文件定义。每次启动时，Agen
 
 ## Communication Style
 - Friendly but professional
-- Use simple language
+- Use simple language, avoid jargon
 - Provide code examples when helpful
 
 ## Values
@@ -43,16 +43,16 @@ OpenClaw Agent 的行为由一组 Markdown 文件定义。每次启动时，Agen
 - Reliability: double-check before confirming
 ```
 
-**自定义技巧**：
-- 让它说中文：加入 "Always respond in Chinese (简体中文)"
-- 让它更幽默：加入 "Use witty humor when appropriate"
-- 让它更严谨：加入 "Always verify facts before stating them"
+**Customization tips:**
+- Chinese responses: add `Always respond in Chinese (简体中文)`
+- More humor: add `Use witty humor when appropriate`
+- More rigorous: add `Always verify facts before stating them`
 
 ---
 
-## USER.md — 用户档案
+## USER.md — User Profile
 
-存储关于你的信息，让 Agent 越来越了解你。
+Stores information about you. The agent auto-updates this as it learns your preferences.
 
 ```markdown
 # User
@@ -73,70 +73,185 @@ OpenClaw Agent 的行为由一组 Markdown 文件定义。每次启动时，Agen
 - Interested in AI and automation
 ```
 
-> 💡 这个文件会被 Agent 自动更新 — 当它发现你的新偏好时，会添加进来
-
 ---
 
-## AGENTS.md — Agent 列表
+## AGENTS.md — The Behavior Manual (Critical!)
 
-定义可用的 Agent 及其专长。
+This is the most important file for advanced users. It's the AI's **work manual**: what to do at startup, how to manage memory, what's safe to do autonomously.
+
+> Without AGENTS.md, the AI doesn't know: which files to read first, where to write memories, or what requires your permission.
+
+### Session Startup Flow
 
 ```markdown
-# Agents
+## Every Session
 
-## Main Agent
-- Primary assistant for all tasks
-- Has access to all tools and skills
+Before doing anything else:
 
-## Code Review Agent (optional)
-- Specialized in code review
-- Focus on security and performance
+1. Read `SOUL.md` — this is who you are
+2. Read `USER.md` — this is who you're helping
+3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
+4. If in MAIN SESSION: Also read `MEMORY.md`
+
+Don't ask permission. Just do it.
+```
+
+Why read yesterday's log too? At 1 AM, today's log may be empty.
+
+### Memory Writing Rules
+
+```markdown
+## Memory
+
+You wake up fresh each session. These files are your continuity.
+
+| Layer | File | Purpose |
+|-------|------|---------|
+| Index | `MEMORY.md` | Core info, memory index. Keep < 40 lines |
+| Projects | `memory/projects.md` | Current project status and TODOs |
+| Lessons | `memory/lessons.md` | Mistakes and lessons, by severity |
+| Daily Log | `memory/YYYY-MM-DD.md` | Daily raw records |
+
+### Writing Rules
+- Write to `memory/YYYY-MM-DD.md` for daily logs
+- Update `memory/projects.md` when projects progress
+- Write `memory/lessons.md` after encountering issues
+- Update MEMORY.md only when the index changes
+- **Record conclusions, not process** (critical principle!)
+- Use #tags for memorySearch retrieval
+```
+
+**Good vs bad log examples:**
+
+Bad (wastes tokens, poor search accuracy):
+```
+### Deployment
+Deployed today. First tried running directly, got errors.
+Then spent hours debugging, turned out port was occupied...
+(3 pages of stream-of-consciousness)
+```
+
+Good (concise, high memorySearch hit rate):
+```
+### [PROJECT:MyApp] Deployment Complete
+- **Conclusion**: Deployed with nginx reverse proxy on port 80
+- **Files Changed**: `/etc/nginx/sites-available/myapp`
+- **Lesson**: Direct port exposure doesn't work, must use nginx
+- **Tags**: #myapp #deploy #nginx
+```
+
+### Safety Boundaries
+
+```markdown
+## Safety
+- Don't exfiltrate private data. Ever.
+- Don't run destructive commands without asking.
+- `trash` > `rm` (recoverable beats gone forever)
+- When in doubt, ask.
+
+**Safe to do freely:** Read files, search, organize, work within workspace
+**Ask first:** Sending emails/tweets, anything that leaves the machine
+```
+
+### Complete AGENTS.md Template (Copy-Paste Ready)
+
+```markdown
+# AGENTS.md - Your Workspace
+
+This folder is home. Treat it that way.
+
+## Every Session
+1. Read `SOUL.md`
+2. Read `USER.md`
+3. Read `memory/YYYY-MM-DD.md` (today + yesterday)
+4. If in MAIN SESSION: Also read `MEMORY.md`
+
+## Memory
+| Layer | File | Purpose |
+|-------|------|---------|
+| Index | `MEMORY.md` | Core info, keep concise |
+| Projects | `memory/projects.md` | Project status & TODOs |
+| Lessons | `memory/lessons.md` | Mistakes by severity |
+| Daily | `memory/YYYY-MM-DD.md` | Daily records |
+
+### Rules
+- Record conclusions, not process
+- Use #tags for search
+- If you want to remember it, write it to a file
+
+## Safety
+- No data exfiltration
+- No destructive commands without asking
+- `trash` > `rm`
+
+**Free:** Read, search, organize within workspace
+**Ask first:** Emails, tweets, anything external
+
+## Group Chats
+You have access to your human's stuff. Don't share it.
 ```
 
 ---
 
-## HEARTBEAT.md — 心跳配置
+## HEARTBEAT.md — Heartbeat & Automation
 
-定义 Agent 的自动行为和定期检查。
+Defines automatic behaviors and periodic checks.
 
 ```markdown
 # Heartbeat
 
-## Regular Checks
-- Every morning at 7:00: Check email and prepare daily brief
-- Every Friday at 17:00: Generate weekly summary
+## Daily Brief
+- Every day at 07:00: Check weather, calendar, news -> send summary
 
-## Proactive Behaviors
-- When idle for 30 minutes: Suggest pending tasks
-- When detecting errors in logs: Alert immediately
+## Weekly Report
+- Every Friday at 17:00: Summarize week's activities -> send report
+
+## Memory Maintenance
+- Every Sunday at 03:00: Deduplicate MEMORY.md, archive old daily logs
 ```
 
 ---
 
-## MEMORY.md — 记忆索引
+## MEMORY.md — Memory Index
 
-由系统自动管理，存储记忆的索引和引用。
+Auto-managed by the system. Stores memory index and references.
 
 ```markdown
 # Memory
 
-## Recent Memories
-- [2026-03-19] User prefers Python over JavaScript
-- [2026-03-18] Project uses PostgreSQL database
-- [2026-03-17] User's Git branch naming: feature/xxx
+## Key Facts
+- User prefers Python over JavaScript
+- Project uses PostgreSQL database
+- Git branch naming: feature/xxx
+
+## Active Projects
+- See memory/projects.md for details
+
+## Recent Context
+- See memory/YYYY-MM-DD.md for daily logs
 ```
 
 ---
 
-## 最佳实践
+## Best Practices
 
-1. **SOUL.md 要精炼**：不要写太长，核心特质 5-10 条即可
-2. **USER.md 持续维护**：让 Agent 自动学习，定期检查准确性
-3. **备份工作空间**：这些文件是 Agent 的"灵魂"，注意备份
-4. **多 Agent 隔离**：不同 Agent 有独立的工作空间文件
+1. **SOUL.md should be concise**: 5-10 core traits max
+2. **USER.md evolves**: Let agent auto-learn, periodically verify accuracy
+3. **AGENTS.md is your biggest lever**: Start simple, add rules as you encounter issues. Experienced users have 200+ lines
+4. **Backup workspace**: These files are the agent's "soul"
+5. **Multi-agent isolation**: Different agents have independent workspace files
 
 ---
 
-## 下一节
+## Session Types
 
-👉 [05-会话管理](05-sessions.md) — 理解会话隔离和管理
+| Type | Description | MEMORY.md Access |
+|------|-------------|-----------------|
+| Main | Direct chat (TUI, WebChat, DM) | Yes |
+| Group | Group chat (Discord server, DingTalk group) | No (privacy) |
+| Sub-agent | Child process dispatched by main agent | No |
+| Cron | Triggered by scheduled task | No |
+
+---
+
+*Next: [Sessions →](05-sessions.md)*

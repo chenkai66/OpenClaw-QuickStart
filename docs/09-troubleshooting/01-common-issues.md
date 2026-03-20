@@ -1,229 +1,246 @@
-# Chapter 9.1: Common Issues (From Real Deployments)
+# Chapter 9.1: Common Issues & Solutions
 
-> Real troubleshooting scenarios from production OpenClaw deployments
+---
 
-## Issue 1: `openclaw: command not found`
+## 1. "openclaw: command not found"
 
-**Cause:** OpenClaw not installed or not in PATH
+**Cause:** OpenClaw not in PATH or not installed.
 
 ```bash
-# Reinstall
-curl -fsSL https://openclaw.ai/install.sh | sh
+# Check if installed
+which openclaw
+npm list -g openclaw
 
-# Or manually add to PATH
-export PATH="$PATH:$HOME/.openclaw/bin"
-
-# Or reinstall via npm
+# Fix
 npm install -g openclaw@latest
+# Or reinstall
+curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-## Issue 2: Proxy Service Won't Start
+---
 
-**Symptom:** `systemctl status dashscope-proxy` shows "failed"
+## 2. Gateway Won't Start
 
-```bash
-# Check detailed error logs
-journalctl -u dashscope-proxy -n 50 --no-pager
-
-# Common causes:
-# 1. Port 8080 occupied
-lsof -i :8080
-# Kill conflicting process or change proxy port
-
-# 2. Node.js path wrong
-which node  # Check actual path
-# Update ExecStart in service file
-
-# 3. File permissions
-ls -l /root/dashscope-proxy.js
-chmod +x /root/dashscope-proxy.js
-```
-
-## Issue 3: Claude Code Returns "terminated" Error
-
-**Symptom:** `API Error: terminated`
+**Symptom:** `openclaw gateway` exits immediately.
 
 ```bash
-# 1. Check proxy receives requests
-journalctl -u dashscope-proxy --since '1 minute ago' -f
-# Run claude command, watch for request logs
-
-# 2. If no logs, check config
-cat ~/.claude/settings.json
-# Ensure ANTHROPIC_BASE_URL is correct
-
-# 3. Manual test
-curl -v http://127.0.0.1:8080/idealab/v1/messages \
-  -H "x-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"claude_sonnet4_5","max_tokens":10,"messages":[{"role":"user","content":"hi"}]}'
-```
-
-## Issue 4: Response Missing ID Field
-
-**Symptom:** Test shows `Has ID: false`
-
-```bash
-# 1. Check proxy version
-head -5 /root/dashscope-proxy.js
-# Should contain "Universal JSON/SSE/Gzip Support"
-
-# 2. Check proxy logs for "Added ID"
-journalctl -u dashscope-proxy -n 100
-
-# 3. Redeploy proxy script if needed
-# See Chapter 1.2 for the complete script
-
-# 4. Restart service
-systemctl restart dashscope-proxy
-```
-
-## Issue 5: OpenClaw Gateway Connection Failed
-
-**Symptom:** Gateway startup fails or times out
-
-```bash
-# 1. Check if already running
-ps aux | grep openclaw
-
-# 2. Kill old processes
-pkill -f "openclaw gateway"
-
-# 3. Reinstall gateway
-openclaw gateway install
-
-# 4. Start with verbose logging
-openclaw gateway --verbose
-
-# 5. Check port conflict
+# Check port conflict
 lsof -i :18789
+# Kill conflicting process
+kill $(lsof -t -i :18789)
+
+# Check status
+openclaw status
+openclaw gateway --verbose
 ```
 
-## Issue 6: Session Directory Not Found
+---
 
-**Cause:** Never had a conversation yet
+## 3. API Key Invalid / Authentication Error
 
-```bash
-# Start first conversation to create directory
-openclaw chat "test conversation"
-
-# Verify
-ls -la ~/.openclaw/agents/main/sessions/
-```
-
-## Issue 7: API Key Invalid / Connection Refused
+**Symptom:** "Unauthorized" or "Invalid API Key"
 
 ```bash
 # Check environment variables
 echo $OPENAI_API_KEY
 echo $OPENAI_BASE_URL
-echo $ANTHROPIC_API_KEY
-echo $ANTHROPIC_BASE_URL
 
-# Reset
-export ANTHROPIC_API_KEY="your-valid-key"
-export ANTHROPIC_BASE_URL="http://127.0.0.1:8080/idealab"
-
-# Test connection
-openclaw chat "test"
+# Common mistakes:
+# 1. Mixing Coding Plan key (sk-sp-xxx) with regular DashScope URL
+# 2. Mixing regular key (sk-xxx) with Coding Plan URL
+# 3. Key has expired or been regenerated
 ```
 
-## Issue 8: Cron Jobs Not Running
+**Fix:** Match the correct pair:
+
+| Key Type | API Key Format | Base URL |
+|----------|---------------|----------|
+| Regular DashScope | `sk-xxxxx` | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| Coding Plan | `sk-sp-xxxxx` | `https://coding.dashscope.aliyuncs.com/v1` |
+| Anthropic | `sk-ant-xxxxx` | (no override needed) |
+
+---
+
+## 4. Model Not Found
+
+**Symptom:** "Model not available" error
 
 ```bash
-# Check task status
-openclaw cron list
+# List available models
+openclaw models list
 
-# Enable disabled task
-openclaw cron edit <job-id> --enabled true
-
-# Verify cron expression at crontab.guru
-# "0 * * * *" = every hour on the hour
-
-# Manual test
-openclaw cron run --name "Knowledge Sync"
+# Common cause: model ID typo in openclaw.json
+# Correct IDs (DashScope):
+#   qwen3-max, qwen3.5-plus, qwen3.5-flash
+# Correct IDs (Coding Plan):
+#   qwen3.5-plus, qwen3-max-2026-01-23, qwen3-coder-next,
+#   qwen3-coder-plus, kimi-k2.5, glm-5, glm-4.7, MiniMax-M2.5
 ```
 
-## Issue 9: Gzip Decompression Error
+---
 
-**Symptom:** Proxy logs show "Gunzip error"
+## 5. Cron Task Not Triggering
+
+**Cause 99%:** Timezone issue — no `tz` field means UTC.
+
+```json
+{
+  "tools": {
+    "cron": {
+      "enabled": true,
+      "tz": "Asia/Shanghai"
+    }
+  }
+}
+```
+
+Also check `delivery.mode`:
+- `"announce"` = sends message to your channel
+- Not set = runs silently, you won't see output
+
+---
+
+## 6. AI "Forgets" Mid-Conversation
+
+**Cause:** Context compression triggered.
+
+**Fix:** Enable memoryFlush (see [Advanced Tips](../06-advanced/03-advanced-tips.md)):
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      }
+    }
+  }
+}
+```
+
+**Quick workaround:** `/compact Keep all technical decisions`
+
+---
+
+## 7. DingTalk Bot Not Responding
 
 ```bash
-# Check Node.js version (must be >= 18)
-node --version
+# Check gateway is running
+openclaw status
 
-# Test zlib module
-node -e "const zlib = require('zlib'); console.log('zlib OK');"
+# Check DingTalk config
+cat ~/.openclaw/openclaw.json | grep -A 10 dingtalk
 
-# If broken, reinstall Node.js
-npm cache clean --force
-# Then reinstall Node.js (see Chapter 1.2)
+# Common issues:
+# 1. AppKey/AppSecret incorrect
+# 2. Robot not enabled in DingTalk admin
+# 3. Stream mode not configured
+# 4. Gateway not restarted after config change
+openclaw gateway restart
 ```
 
-## Issue 10: Network / DNS Issues
+---
 
-**Symptom:** ECONNREFUSED or ETIMEDOUT
+## 8. Discord Bot Online But Not Replying
+
+**99% cause:** MESSAGE CONTENT INTENT not enabled.
+
+Fix:
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Select your bot -> Bot tab
+3. Scroll to "Privileged Gateway Intents"
+4. Enable: **MESSAGE CONTENT INTENT**
+5. Click Save Changes
+6. `openclaw gateway restart`
+
+---
+
+## 9. Permission Denied on Gateway Service
 
 ```bash
-# 1. Test connectivity
-ping idealab.alibaba-inc.com
-curl -I https://idealab.alibaba-inc.com
+# Check file permissions
+ls -la /etc/systemd/system/openclaw-gateway.service
 
-# 2. Check firewall
-sudo iptables -L -n
+# Ensure openclaw binary is accessible
+which openclaw
 
-# 3. Check DNS
-nslookup idealab.alibaba-inc.com
-
-# 4. For internal networks, add proxy to systemd service:
-# Environment="HTTP_PROXY=http://your-proxy:port"
-# Environment="HTTPS_PROXY=http://your-proxy:port"
+# If using systemd, reload and restart
+systemctl daemon-reload
+systemctl restart openclaw-gateway
+journalctl -u openclaw-gateway -n 50 --no-pager
 ```
 
-## Issue 11: Second Brain Web UI Not Loading
+---
+
+## 10. Session Files Not Saving
 
 ```bash
-# Check if dev server is running
-lsof -i :3000
+# Check sessions directory exists
+ls -la ~/.openclaw/agents/main/sessions/
 
-# Start dev server
-cd ~/openclaw-second-brain
-npm run dev
+# Check disk space
+df -h
 
-# Check for build errors
-npm run build 2>&1 | tail -20
+# Check file permissions
+ls -la ~/.openclaw/
 ```
 
-## Issue 12: Knowledge Sync Produces Empty Results
+---
+
+## 11. Rate Limit Exceeded (Coding Plan)
+
+**Symptom:** 429 errors or "rate limit" messages.
+
+Pro Plan limits:
+- 6,000 requests per 5 hours
+- 45,000 requests per week
+- 90,000 requests per month
+
+**Strategies:**
+- Use lighter models for simple tasks (`/model MiniMax-M2.5`)
+- Use `/new` to start fresh sessions (shorter context = fewer API calls per message)
+- Space out heavy work sessions
+
+---
+
+## 12. Skills Not Triggering
 
 ```bash
-# Check for conversation files
-find ~/.openclaw/agents/main/sessions -name "*.jsonl" | wc -l
-find ~/.claude/projects -name "*.jsonl" -type f | wc -l
+# Check skill is installed
+openclaw skills list
 
-# Reset processing tracker
-rm ~/.openclaw/workspace/memory/processed-claude-code-sessions.json
-
-# Run sync manually with verbose output
-cd ~/openclaw-second-brain
-npm run agent:knowledge:enhanced
+# Common causes:
+# 1. Skill description doesn't match your trigger words
+# 2. Skill SKILL.md not in the right directory
+# 3. Gateway hasn't loaded the skill (restart needed)
+openclaw gateway restart
 ```
+
+---
 
 ## Quick Diagnostic Script
 
 ```bash
 #!/bin/bash
-echo "=== OpenClaw Diagnostic ==="
-echo "Node.js: $(node --version 2>/dev/null || echo 'NOT FOUND')"
-echo "OpenClaw: $(openclaw --version 2>/dev/null || echo 'NOT FOUND')"
-echo "Claude: $(claude --version 2>/dev/null || echo 'NOT FOUND')"
-echo "Proxy: $(systemctl is-active dashscope-proxy 2>/dev/null || echo 'NOT RUNNING')"
-echo "Gateway: $(systemctl is-active openclaw-gateway 2>/dev/null || echo 'NOT RUNNING')"
-echo "Port 8080: $(ss -tlnp | grep -q 8080 && echo 'OK' || echo 'NOT LISTENING')"
-echo "Port 18789: $(ss -tlnp | grep -q 18789 && echo 'OK' || echo 'NOT LISTENING')"
-echo "Sessions: $(find ~/.openclaw/agents/main/sessions -name '*.jsonl' 2>/dev/null | wc -l) files"
-echo "Config: $(test -f ~/.openclaw/openclaw.json && echo 'EXISTS' || echo 'MISSING')"
-echo "==========================="
+echo "=== OpenClaw Diagnostics ==="
+echo "Node.js: $(node -v 2>/dev/null || echo 'NOT INSTALLED')"
+echo "OpenClaw: $(openclaw --version 2>/dev/null || echo 'NOT INSTALLED')"
+echo "Gateway: $(openclaw status 2>/dev/null | head -3)"
+echo ""
+echo "API Config:"
+echo "  OPENAI_API_KEY: $([ -n "$OPENAI_API_KEY" ] && echo "SET (${OPENAI_API_KEY:0:8}...)" || echo "NOT SET")"
+echo "  OPENAI_BASE_URL: ${OPENAI_BASE_URL:-NOT SET}"
+echo "  ANTHROPIC_API_KEY: $([ -n "$ANTHROPIC_API_KEY" ] && echo "SET" || echo "NOT SET")"
+echo ""
+echo "Ports:"
+lsof -i :18789 2>/dev/null || echo "  Port 18789: FREE"
+echo ""
+echo "Disk: $(df -h ~ | tail -1 | awk '{print $4}') available"
+echo "Sessions: $(ls ~/.openclaw/agents/main/sessions/ 2>/dev/null | wc -l) files"
 ```
 
 ---

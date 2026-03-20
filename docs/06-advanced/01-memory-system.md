@@ -1,162 +1,223 @@
-# Chapter 6.1: Unified Memory System (Real Implementation)
+# Chapter 6.1: Memory System
 
-> Based on the production Claude Code + OpenClaw unified memory system
+> OpenClaw's persistent memory lets your AI assistant get smarter over time.
+
+---
 
 ## Overview
 
-The memory system unifies conversations from both **Claude Code** and **OpenClaw TUI**, automatically capturing, processing, and accumulating knowledge.
+OpenClaw uses a **file-based memory system** that persists across sessions. Every new session, the AI starts fresh — but by reading memory files, it recovers context.
 
 ```
-Claude Code Conversations      OpenClaw TUI Conversations
-    |                              |
-    +-- ~/.claude/projects/       +-- ~/.openclaw/agents/main/sessions/
-    |                              |
-    +-------------+----------------+
-                  |
-          Enhanced Knowledge Agent (hourly cron)
-                  |
-          +-- Auto-discover sessions
-          +-- Format conversion
-          +-- Deduplication
-          +-- LLM knowledge extraction
-                  |
-          Second Brain Knowledge Base
-          (Notes + Logs + Summary)
-                  |
-          Memory System Update (daily midnight)
-                  |
-          Next conversation carries memory
+Session starts -> AI reads workspace files:
+  1. SOUL.md (identity)
+  2. USER.md (user info)
+  3. AGENTS.md (behavior rules)
+  4. memory/YYYY-MM-DD.md (recent daily logs)
+  5. MEMORY.md (core facts index)
 ```
+
+---
 
 ## Memory Architecture: 4 Layers
 
-| Layer | Persistence | Content |
-|-------|------------|---------|
-| User Preferences | Long-term | Name, habits, communication style |
-| Decision History | Medium-term | Past choices, project decisions |
-| Technical Knowledge | Short-medium | Learned concepts, patterns |
-| Conversation History | Short-term | Recent interactions |
+| Layer | File | Persistence | Content |
+|-------|------|------------|---------|
+| Index | `MEMORY.md` | Long-term | Core facts, preferences, memory index (< 40 lines) |
+| Projects | `memory/projects.md` | Medium-term | Active project status and TODOs |
+| Lessons | `memory/lessons.md` | Long-term | Mistakes and solutions by severity |
+| Daily | `memory/YYYY-MM-DD.md` | Short-term | Daily raw logs with conclusions |
 
-## Quick Start
+---
+
+## Setting Up Memory
+
+### 1. Create Memory Directory
 
 ```bash
-cd ~/openclaw-second-brain
-
-# Method 1: Use startup script (recommended)
-./scripts/openclaw-tui.sh
-
-# Method 2: Manual environment setup
-export ANTHROPIC_API_KEY="your-idealab-api-key"
-export ANTHROPIC_BASE_URL="http://127.0.0.1:8080/idealab"
-openclaw tui
+cd ~/.openclaw/workspace
+mkdir -p memory
 ```
 
-## Prerequisites
+### 2. Initialize MEMORY.md
 
-**dashscope-proxy must be running:**
-```bash
-ps aux | grep dashscope-proxy
-systemctl start dashscope-proxy  # if not running
+```markdown
+# Memory
+
+## Key Facts
+- User prefers Python
+- Timezone: Asia/Shanghai
+- Primary editor: VSCode
+
+## Active Projects
+- See memory/projects.md
+
+## Memory Index
+- Daily logs: memory/YYYY-MM-DD.md
+- Project status: memory/projects.md
+- Lessons learned: memory/lessons.md
 ```
 
-**Gateway must be running:**
-```bash
-openclaw health
-openclaw gateway restart  # if not running
+### 3. Configure AGENTS.md Memory Rules
+
+Add to your `AGENTS.md` (see [Chapter 2.4](../02-core-concepts/04-workspace-files.md)):
+
+```markdown
+## Memory Rules
+- Write daily logs to `memory/YYYY-MM-DD.md`
+- Record conclusions, not process
+- Use #tags for memorySearch retrieval
+- Update MEMORY.md only when index changes
+- Keep MEMORY.md < 40 lines
 ```
 
-## Automated Knowledge Pipeline
+---
 
-1. **Storage** - OpenClaw: `~/.openclaw/agents/main/sessions/*.jsonl`, Claude Code: `~/.claude/projects/*/*.jsonl`
-2. **Discovery** - Knowledge Agent scans both directories hourly, skips `.jsonl.lock` files
-3. **Format Conversion** - Claude Code adapter converts to OpenClaw format, filters < 50 chars
-4. **LLM Processing** - Summarization, keyword extraction, topic clustering, sentiment analysis
-5. **Intelligent Merging** - Similarity threshold 0.7, combines related conversations
-6. **Content Generation** - Notes, Logs, Reports in Markdown
-7. **Indexing** - Full-text search, tag library with frequency counts
+## Preventing Memory Loss: memoryFlush
 
-## Configuring Cron Jobs
+When conversations get long, OpenClaw compresses old messages. Enable memoryFlush to auto-save before compression:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "compaction": {
+        "reserveTokensFloor": 20000,
+        "memoryFlush": {
+          "enabled": true,
+          "softThresholdTokens": 4000
+        }
+      }
+    }
+  }
+}
+```
+
+See [Advanced Tips](03-advanced-tips.md) for detailed explanation.
+
+---
+
+## memorySearch: Semantic Search over Memory
+
+OpenClaw supports semantic search over your memory files. To enable, you need an embedding API.
+
+### Free Option: SiliconFlow bge-m3
+
+```json
+{
+  "tools": {
+    "memorySearch": {
+      "enabled": true,
+      "embedding": {
+        "provider": "openai-compatible",
+        "baseUrl": "https://api.siliconflow.cn/v1",
+        "apiKey": "YOUR_SILICONFLOW_KEY",
+        "model": "BAAI/bge-m3"
+      }
+    }
+  }
+}
+```
+
+Get a free API key at [SiliconFlow](https://siliconflow.cn/).
+
+### How It Works
+
+1. Memory files are chunked and embedded into vectors
+2. When you ask "what did we discuss about deployment?", OpenClaw searches semantically
+3. Relevant memories are injected into context
+
+---
+
+## Automated Knowledge Sync (Advanced)
+
+For power users who want to combine memories from multiple AI tools (e.g., Claude Code + OpenClaw):
+
+### Cron-based Sync
 
 ```bash
-# Create enhanced knowledge sync (every hour)
+# Hourly knowledge sync
 openclaw cron add \
-  --name "Enhanced Knowledge Sync" \
+  --name "Knowledge Sync" \
   --cron "0 * * * *" \
-  --session isolated \
-  --message "cd /path/to/second-brain && npm run agent:knowledge:enhanced" \
-  --no-deliver
-
-# Daily research report (23:00)
-openclaw cron add \
-  --name "Daily Research" \
-  --cron "0 23 * * *" \
   --tz "Asia/Shanghai" \
   --session isolated \
-  --message "cd /path/to/second-brain && npm run agent:research" \
-  --delivery none
+  --message "Read all memory files, deduplicate, update MEMORY.md index"
 
-# Manage tasks
-openclaw cron list
-openclaw cron runs --name "Knowledge Sync" --limit 10
-openclaw cron run --name "Knowledge Sync"  # manual trigger
+# Daily summary (23:00)
+openclaw cron add \
+  --name "Daily Summary" \
+  --cron "0 23 * * *" \
+  --tz "Asia/Shanghai" \
+  --delivery announce \
+  --message "Summarize today's work from memory/$(date +%Y-%m-%d).md"
 ```
 
-## Feature Comparison
+### Multi-Source Memory Pipeline
 
-| Feature | Basic Sync | Enhanced Sync |
-|---------|-----------|--------------|
-| OpenClaw TUI conversations | Yes | Yes |
-| Claude Code conversations | No | **Yes** |
-| Deduplication | Basic | **Complete tracking** |
-| Format conversion | Single | **Multi-format** |
-| Error handling | Basic | **Robust** |
+```
+Claude Code sessions    OpenClaw TUI sessions
+  |                        |
+  +-- ~/.claude/           +-- ~/.openclaw/sessions/
+  |                        |
+  +---------+--------------+
+            |
+    Knowledge Agent (hourly cron)
+            |
+    Deduplicate + Extract insights
+            |
+    Update memory/ directory
+```
+
+---
+
+## Memory Maintenance
+
+Add to HEARTBEAT.md for automatic cleanup:
+
+```markdown
+## Memory Maintenance
+- Every Sunday at 03:00:
+  1. Deduplicate MEMORY.md entries
+  2. Archive daily logs older than 30 days
+  3. Verify projects.md matches current status
+```
+
+---
+
+## Daily Log Format
+
+```markdown
+### [PROJECT:MyApp] Deployment Complete
+- **Conclusion**: Deployed with nginx on port 80
+- **Files**: /etc/nginx/sites-available/myapp
+- **Lesson**: Must use reverse proxy, direct port exposure fails
+- **Tags**: #myapp #deploy #nginx
+```
+
+---
 
 ## Monitoring
 
 ```bash
-# Count Claude Code sessions
-find ~/.claude/projects -name "*.jsonl" -type f | wc -l
+# Check memory health
+wc -l ~/.openclaw/workspace/MEMORY.md      # Should be < 40 lines
+ls -lt ~/.openclaw/workspace/memory/*.md    # Recent logs
 
-# Check processed sessions
-cat ~/.openclaw/workspace/memory/processed-claude-code-sessions.json | jq '. | length'
-
-# View latest content
-ls -lt content/notes/*.md | head -5
-ls -lt content/logs/*.md | head -5
+# Count session files
+ls ~/.openclaw/agents/main/sessions/*.jsonl | wc -l
 ```
 
-## Expected Output
+---
 
-```
-Claude Code: Processed: 5, Exported: 5, Errors: 0
-OpenClaw + Claude Code: Total: 8, Logs: 5, Notes: 3
-Duration: 3.45s
-Knowledge sync completed successfully!
-```
+## Best Practices
 
-## Deduplication
-
-Tracking file: `~/.openclaw/workspace/memory/processed-claude-code-sessions.json`
-- Each run only processes new sessions
-- Delete tracking file to reprocess all: `rm ~/.openclaw/workspace/memory/processed-claude-code-sessions.json`
-
-## LLM Config (summary-config.json)
-
-```json
-{
-  "llm": { "model": "qwen-plus", "max_retries": 3, "temperature": 0.3 },
-  "processing": { "batch_size": 10, "min_conversation_length": 50, "similarity_threshold": 0.7 },
-  "clustering": { "algorithm": "semantic", "min_cluster_size": 2, "merge_threshold": 0.8 }
-}
-```
-
-## Important Notes
-
-1. First run processes ALL history - may take longer
-2. dashscope-proxy must be running for Claude models
-3. Deduplication is automatic
-4. Cron tasks consume API quota - adjust frequency as needed
-5. Regular backups recommended: `cp -r ~/.openclaw/ ~/.openclaw-backup-$(date +%Y%m%d)`
+1. **Keep MEMORY.md lean**: < 40 lines, index only
+2. **Enable memoryFlush**: Prevents losing context during long chats
+3. **Record conclusions, not process**: "Deployed with nginx on port 80" not "Tried running directly, got errors..."
+4. **Use #tags**: Makes memorySearch much more effective
+5. **Weekly maintenance**: Clean up stale entries
+6. **Backup regularly**: `cp -r ~/.openclaw/ ~/.openclaw-backup-$(date +%Y%m%d)`
 
 ---
 

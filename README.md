@@ -1,99 +1,84 @@
-# 🦞 OpenClaw 完全教程 — 从零到精通
+# OpenClaw Complete Tutorial — From Zero to Mastery
 
-> **OpenClaw** 是 2026 年最火的开源 AI Agent 平台，GitHub 250K+ Stars。
-> 本教程从零开始，手把手带你掌握 OpenClaw 的一切。
-
-```
-"EXFOLIATE! EXFOLIATE!" — 太空龙虾 Molty
-```
+> **OpenClaw** is the hottest open-source AI Agent platform of 2026, with 250K+ GitHub Stars.
+> This tutorial takes you from zero to mastery, step by step.
 
 ---
 
-## 📖 这是什么？
+## What Is This?
 
-这是一套**从 0 到 100** 的 OpenClaw 中文教程，包含：
+A **0-to-100** comprehensive OpenClaw tutorial, including:
 
-- 📚 **9 章完整文档**：从入门到精通
-- 💻 **8 个实战案例**：可直接运行的代码示例
-- 🔧 **配置模板**：开箱即用的配置文件
-- 🤖 **钉钉集成**：详细的钉钉对接保姆级教程
+- **10 chapters** of complete documentation: beginner to advanced
+- **8 hands-on examples**: runnable code samples
+- **Configuration templates**: ready-to-use config files
+- **DingTalk integration**: detailed step-by-step guide
+- **Coding Plan guide**: official Alibaba Cloud integration with 8 models
 
 ---
 
-## 🏗 项目结构
+## Project Structure
 
 ```
 openclaw-tutorial/
-├── README.md                          # 本文件
-├── docs/                              # �� 完整文档
-│   ├── 01-getting-started/            # 第1章：入门指南
-│   │   ├── 01-what-is-openclaw.md     #   什么是 OpenClaw
-│   │   ├── 02-installation.md         #   安装指南（全平台）
-│   │   ├── 03-first-chat.md           #   第一次对话
-│   │   └── 04-web-dashboard.md        #   Web 控制面板
-│   ├── 02-core-concepts/             # 第2章：核心概念
-│   │   ├── 01-architecture.md         #   架构设计
-│   │   ├── 02-gateway.md              #   网关系统
-│   │   ├── 03-agent-loop.md           #   Agent 循环
-│   │   ├── 04-workspace-files.md      #   工作空间文件（SOUL/USER/AGENTS）
-│   │   └── 05-sessions.md            #   会话管理
-│   ├── 03-configuration/             # 第3章：配置详解
-│   │   ├── 01-openclaw-json.md        #   openclaw.json 完全指南
-│   │   ├── 02-model-providers.md      #   模型提供商配置
-│   │   ├── 03-tools-config.md         #   26 个 Tools 详解
-│   │   └── 04-environment-vars.md     #   环境变量
-│   ├── 04-channels/                  # 第4章：渠道接入
-│   │   ├── 01-overview.md             #   渠道概览
-│   │   ├── 02-telegram.md             #   Telegram
-│   │   ├── 03-discord.md              #   Discord
-│   │   ├── 04-whatsapp.md             #   WhatsApp
-│   │   └── 05-china-im.md            #   国内 IM 总览
-│   ├── 05-skills/                    # 第5章：Skills 技能系统
-│   │   ├── 01-understanding-skills.md #   理解 Skills
-│   │   ├── 02-builtin-skills.md       #   53 个内置 Skills
-│   │   ├── 03-clawhub.md             #   ClawHub 技能市场
-│   │   ├── 04-custom-skills.md        #   自定义 Skill 开发
-│   │   └── 05-skill-management.md     #   Skills 管理
-│   ├── 06-advanced/                  # 第6章：进阶功能
-│   │   ├── 01-memory-system.md        #   记忆系统
-│   │   ├── 02-cron-jobs.md            #   定时任务
-│   │   ├── 03-multi-agent.md          #   多 Agent 协作
-│   │   ├── 04-browser-automation.md   #   浏览器自动化
-│   │   └── 05-mcp-integration.md      #   MCP 协议集成
-│   ├── 07-use-cases/                 # 第7章：实战案例集
-│   │   ├── 01-personal-assistant.md   #   个人助理
-│   │   ├── 02-code-reviewer.md        #   代码审查助手
-│   │   ├── 03-knowledge-base.md       #   知识库管理
-│   │   ├── 04-email-automation.md     #   邮件自动化
-│   │   └── 05-smart-home.md           #   智能家居控制
-│   ├── 08-dingtalk-complete/         # 第8章：钉钉对接完全教程
-│   │   ├── 01-prerequisites.md        #   前置准备
-│   │   ├── 02-dingtalk-app-setup.md   #   钉钉应用创建
-│   │   ├── 03-openclaw-dingtalk.md    #   OpenClaw 钉钉配置
-│   │   ├── 04-advanced-features.md    #   高级功能
-│   │   └── 05-production-deploy.md    #   生产环境部署
-│   └── 09-troubleshooting/           # 第9章：故障排查
-│       ├── 01-common-issues.md        #   常见问题
-│       └── 02-faq.md                  #   FAQ
-├── examples/                         # 💻 实战代码示例
-│   ├── 01-hello-world/               #   Hello World
-│   ├── 02-email-assistant/           #   邮件助手
-│   ├── 03-code-reviewer/            #   代码审查
-│   ├── 04-knowledge-base/           #   知识库
-│   ├── 05-dingtalk-bot/             #   钉钉机器人
-│   ├── 06-cron-daily-brief/         #   每日简报
-│   ├── 07-multi-agent/              #   多 Agent
-│   └── 08-browser-automation/       #   浏览器自动化
-├── config/                           # 🔧 配置模板
-│   └── templates/                    #   各场景配置模板
-└── scripts/                          # 🛠 辅助脚本
+├── README.md
+├── docs/
+│   ├── 01-getting-started/            # Ch1: Getting Started
+│   │   ├── 01-what-is-openclaw.md     #   What is OpenClaw
+│   │   ├── 02-installation.md         #   Installation (all platforms)
+│   │   ├── 03-first-chat.md           #   First conversation
+│   │   ├── 04-web-dashboard.md        #   Web dashboard
+│   │   └── 05-tui-setup.md            #   TUI setup
+│   ├── 02-core-concepts/             # Ch2: Core Concepts
+│   │   ├── 01-architecture.md         #   6-layer architecture
+│   │   ├── 02-gateway.md              #   Gateway system
+│   │   ├── 03-agent-loop.md           #   Agent loop
+│   │   ├── 04-workspace-files.md      #   SOUL/USER/AGENTS/HEARTBEAT/MEMORY
+│   │   └── 05-sessions.md            #   Session management
+│   ├── 03-configuration/             # Ch3: Configuration
+│   │   ├── 01-openclaw-json.md        #   openclaw.json guide
+│   │   ├── 02-model-providers.md      #   Model providers (DashScope/Anthropic)
+│   │   ├── 03-tools-config.md         #   Tools configuration
+│   │   └── 04-environment-vars.md     #   Environment variables
+│   ├── 04-channels/                  # Ch4: Channels
+│   │   ├── 01-overview.md             #   Channel overview
+│   │   └── 05-china-im.md            #   China IM (DingTalk/WeChat/Feishu)
+│   ├── 05-skills/                    # Ch5: Skills System
+│   │   ├── 01-understanding-skills.md #   Understanding Skills
+│   │   └── 04-custom-skills.md        #   Custom Skill development
+│   ├── 06-advanced/                  # Ch6: Advanced
+│   │   ├── 01-memory-system.md        #   Memory system
+│   │   ├── 02-cron-jobs.md            #   Cron scheduled tasks
+│   │   ├── 03-advanced-tips.md        #   Advanced tips & config cheatsheet (NEW!)
+│   │   └── 05-mcp-integration.md      #   MCP protocol integration
+│   ├── 07-use-cases/                 # Ch7: Use Cases
+│   │   └── 01-second-brain.md         #   Second Brain project
+│   ├── 08-dingtalk-complete/         # Ch8: DingTalk Integration
+│   │   ├── 01-prerequisites.md        #   Prerequisites
+│   │   ├── 02-dingtalk-app-setup.md   #   DingTalk app setup
+│   │   ├── 03-openclaw-dingtalk.md    #   OpenClaw DingTalk config
+│   │   ├── 04-advanced-features.md    #   Advanced features
+│   │   └── 05-production-deploy.md    #   Production deployment
+│   ├── 09-troubleshooting/           # Ch9: Troubleshooting
+│   │   ├── 01-common-issues.md        #   Common issues
+│   │   └── 02-faq.md                  #   FAQ
+│   └── 10-coding-plan/              # Ch10: Coding Plan (NEW!)
+│       └── 01-coding-plan-guide.md    #   DashScope Coding Plan integration
+├── examples/                         # Hands-on code samples
+├── config/                           # Config templates
+│   └── templates/
+│       ├── basic-config.json          #   DashScope pay-per-use
+│       ├── advanced-config.json       #   DashScope + third-party models
+│       ├── coding-plan-config.json    #   Coding Plan (official, NEW!)
+│       └── dingtalk-config.json       #   DingTalk integration
+└── scripts/
 ```
 
 ---
 
-## 🚀 快速开始
+## Quick Start
 
-### 1. 安装 OpenClaw（5 分钟）
+### 1. Install OpenClaw (5 min)
 
 ```bash
 # Linux / macOS
@@ -103,46 +88,57 @@ curl -fsSL https://openclaw.ai/install.sh | bash
 iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-### 2. 初始化引导
+### 2. Onboarding
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-### 3. 开始聊天
+### 3. Start Chatting
 
 ```bash
-openclaw dashboard   # 打开 Web 面板
-# 或
-openclaw tui         # 终端界面
+openclaw tui         # Terminal UI
+# or
+openclaw dashboard   # Web dashboard
 ```
 
 ---
 
-## 📋 学习路线图
+## Learning Roadmap
 
-| 阶段 | 章节 | 预计时间 | 目标 |
-|------|------|----------|------|
-| 🟢 入门 | 第1-2章 | 2 小时 | 安装运行，理解核心概念 |
-| 🟡 进阶 | 第3-5章 | 4 小时 | 掌握配置、渠道、Skills |
-| 🔴 精通 | 第6-7章 | 6 小时 | 记忆系统、定时任务、MCP |
-| ⭐ 实战 | 第8章 | 3 小时 | 钉钉完整对接 |
-
----
-
-## 🔗 相关资源
-
-| 资源 | 链接 |
-|------|------|
-| 官方 GitHub | https://github.com/openclaw/openclaw |
-| 官方文档 | https://docs.openclaw.ai |
-| ClawHub 技能市场 | https://clawhub.ai |
-| OpenClaw China 插件 | https://github.com/BytePioneer-AI/openclaw-china |
-| 中文教程合集 | https://github.com/xianyu110/awesome-openclaw-tutorial |
+| Stage | Chapters | Time | Goal |
+|-------|----------|------|------|
+| Beginner | Ch 1-2 | 2 hrs | Install, understand core concepts |
+| Intermediate | Ch 3-5 | 4 hrs | Configuration, channels, Skills |
+| Advanced | Ch 6, 10 | 4 hrs | Memory, Cron, Coding Plan, advanced tips |
+| Hands-on | Ch 7-8 | 3 hrs | Real projects, DingTalk integration |
 
 ---
 
-## 📄 License
+## API Options
 
-MIT License — 自由使用、修改和分享。
+| Option | Cost | Models | Best For |
+|--------|------|--------|----------|
+| **DashScope Pay-per-use** | Per token | Qwen series | Light usage |
+| **Coding Plan** (recommended) | 200 CNY/mo | 8 models | Regular usage |
+| **Anthropic** | Per token | Claude series | International users |
 
+See [Ch 10: Coding Plan](docs/10-coding-plan/01-coding-plan-guide.md) for detailed setup.
+
+---
+
+## Resources
+
+| Resource | Link |
+|----------|------|
+| Official GitHub | https://github.com/openclaw/openclaw |
+| Official Docs | https://docs.openclaw.ai |
+| ClawHub Skills | https://clawhub.ai |
+| Awesome OpenClaw | https://github.com/rohitg00/awesome-openclaw |
+| OpenClaw China Plugin | https://github.com/BytePioneer-AI/openclaw-china |
+
+---
+
+## License
+
+MIT License — Free to use, modify, and share.

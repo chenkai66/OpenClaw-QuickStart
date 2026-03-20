@@ -1,92 +1,99 @@
-# 第1章·第1节：什么是 OpenClaw？
+# Chapter 1.1: What is OpenClaw?
 
-> 🦞 OpenClaw = 你的私人 AI 员工，可以帮你发消息、管邮件、写代码、跑脚本、控制浏览器……
-
----
-
-## 一句话理解
-
-**OpenClaw 是一个开源的、自托管的 AI Agent 网关平台。**
-它把你常用的聊天工具（WhatsApp、Telegram、Discord、钉钉、飞书等）连接到 AI 编码代理，让你可以随时随地通过消息指挥 AI 帮你干活。
+> OpenClaw = Your personal AI agent that can send messages, manage emails, write code, run scripts, automate browsers...
 
 ---
 
-## 和 ChatGPT/Claude 有什么不同？
+## One-Liner
 
-| 对比项 | ChatGPT / Claude | OpenClaw |
-|--------|------------------|----------|
-| 运行方式 | 云端托管 | **自托管**，数据在你手里 |
-| 能做什么 | 聊天、回答问题 | **执行任务**：发邮件、跑命令、操作文件 |
-| 入口 | 网页/App | **任何聊天工具**：微信、钉钉、Telegram |
-| 扩展性 | 受限 | **Skills 插件系统**：1800+ 社区技能 |
-| 记忆 | 有限 | **持久化记忆**：越用越懂你 |
-| 定时任务 | 不支持 | **Cron 系统**：7:00 给你发每日简报 |
-| 开源 | 否 | **MIT 开源**，免费使用 |
+**OpenClaw is an open-source, self-hosted AI Agent gateway platform.**
+
+It connects your chat tools (WhatsApp, Telegram, Discord, DingTalk, Slack, Signal, iMessage, Google Chat, Teams, Matrix) to AI agents, letting you command AI to work for you from anywhere.
 
 ---
 
-## OpenClaw 能做什么？（真实案例）
+## How is it Different from ChatGPT/Claude?
 
-### 🏠 日常生活
-- "帮我查一下明天北京的天气，然后发到我的 Telegram"
-- "每天早上 7 点给我发今天的待办清单"
-- "帮我在淘宝上比价这款耳机"（浏览器自动化）
-
-### 💼 办公效率
-- "帮我整理今天的未读邮件，按优先级排序"
-- "把这份会议纪要发到钉钉群里"
-- "每周五下午 5 点生成本周工作总结"
-
-### 💻 开发者日常
-- "Review 一下这个 PR，给出代码审查意见"
-- "监控服务器日志，发现 ERROR 立即通知我"
-- "帮我写一个 Python 脚本处理 CSV 数据"
-
-### 📱 社交媒体
-- "每天早上发一条技术推文到 Twitter"
-- "回复 Discord 频道里的技术问题"
-- "总结 Slack 频道里今天的讨论"
+| Comparison | ChatGPT / Claude | OpenClaw |
+|-----------|------------------|----------|
+| Hosting | Cloud-hosted | **Self-hosted**, your data stays with you |
+| Capability | Chat, answer questions | **Execute tasks**: send emails, run commands, manipulate files |
+| Interface | Web / App only | **Any chat platform**: DingTalk, Telegram, Discord, WhatsApp |
+| Extensibility | Limited | **Skills system**: 5,700+ community skills via ClawHub |
+| Memory | Limited | **Persistent memory**: gets smarter over time |
+| Scheduling | Not supported | **Cron system**: auto-send daily briefs at 7:00 |
+| Open Source | No | **MIT License**, free to use |
 
 ---
 
-## OpenClaw 的历史
+## What Can OpenClaw Do? (Real Examples)
 
-```
-时间线：
-2025年底  Peter Steinberger 创建 "Clawdbot" 项目
-          ↓ （因商标问题）
-2025年底  更名为 "Moltbot"（龙虾蜕壳之意）
-          ↓ （社区投票）
-2026年1月 正式命名为 "OpenClaw"
-          ↓ （病毒式传播）
-2026年1月 GitHub 100K Stars（几天内）
-          ↓ （持续增长）
-2026年3月 GitHub 250K+ Stars，成为现象级项目
-```
+### Daily Life
+- "Check tomorrow's weather in Beijing and send to my Telegram"
+- "Every morning at 7:00, send me today's to-do list"
+- "Compare prices for this headphone on Taobao" (browser automation)
 
----
+### Office Productivity
+- "Organize my unread emails by priority"
+- "Send these meeting notes to the DingTalk group"
+- "Every Friday at 5 PM, generate this week's summary"
 
-## 核心设计理念
+### Developer Workflow
+- "Review this PR and give code review feedback"
+- "Monitor server logs, alert me immediately on ERROR"
+- "Write a Python script to process this CSV data"
 
-1. **自托管优先** — 你的数据，你的规则
-2. **多渠道统一** — 一个网关服务所有聊天平台
-3. **Agent 原生** — 为 AI 代理而设计，支持工具调用、会话、记忆
-4. **开源社区** — MIT 协议，社区驱动开发
+### Social Media
+- "Post a tech tweet to Twitter every morning"
+- "Answer technical questions in the Discord channel"
+- "Summarize today's Slack channel discussions"
 
 ---
 
-## 系统要求
+## History
 
-| 需求 | 最低配置 | 推荐配置 |
-|------|----------|----------|
-| Node.js | v22.16+ | v24（最新） |
-| 内存 | 2GB（需 swap） | 4GB+ |
-| 磁盘 | 10GB | 20GB+ |
-| 网络 | 可访问 API 服务商 | 稳定连接 |
-| 系统 | Linux / macOS / Windows(WSL2) | Linux (Ubuntu 22+) |
+| Date | Name | Event |
+|------|------|-------|
+| Nov 2025 | Clawdbot | Peter Steinberger creates the project |
+| Jan 27, 2026 | Moltbot | Renamed due to Anthropic trademark complaint |
+| Jan 30, 2026 | **OpenClaw** | Final name via community vote |
+| Feb 2026 | — | 195K GitHub stars in 66 days (18x faster than Kubernetes) |
+| Mar 2026 | — | 250K+ GitHub stars, 5,700+ community skills |
 
 ---
 
-## 下一节
+## Core Architecture (6 Layers)
 
-👉 [02-安装指南](02-installation.md) — 5 分钟安装 OpenClaw
+| Layer | Purpose |
+|-------|---------|
+| **Gateway** | Central control — message routing, sessions, plugins, tool execution |
+| **Channels** | Adapters for Telegram/WhatsApp/Discord/DingTalk into standard message format |
+| **Routing + Sessions** | Determines which agent handles which conversation |
+| **Agent Runtime** | Processes context, calls model providers, streams responses, requests tools |
+| **Tools** | Capabilities — web fetch, browser control, command execution, device pairing |
+| **Surfaces** | Interaction — chat apps, web dashboard, macOS menu bar, Live Canvas |
+
+---
+
+## Core Design Principles
+
+1. **Self-hosted first** — Your data, your rules
+2. **Multi-channel unified** — One gateway serves all chat platforms
+3. **Agent-native** — Built for AI agents with tool calling, sessions, memory
+4. **Open community** — MIT license, community-driven with 5,700+ skills on ClawHub
+
+---
+
+## System Requirements
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| OS | macOS 11+ / Ubuntu 22.04+ / Windows (WSL2) | Ubuntu 22.04+ |
+| Node.js | **v22.0+** | v22.x LTS |
+| RAM | 2 GB | 4-8 GB |
+| CPU | 2 cores | 2-4 cores |
+| Storage | 10 GB SSD | 30-50 GB SSD |
+
+---
+
+*Next: [Installation →](02-installation.md)*

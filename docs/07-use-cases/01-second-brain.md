@@ -45,7 +45,7 @@ Claude Code Conversations      OpenClaw TUI Conversations
 | Knowledge Graph | D3.js |
 | AI Models | Claude Sonnet 4.5 (primary), Qwen models (backup) |
 | LLM Pipeline | TypeScript custom summarization |
-| API Proxy | dashscope-proxy (Node.js) |
+| API | DashScope API (OpenAI-compatible) or Anthropic API |
 | Process Manager | systemd |
 | Scheduling | OpenClaw Cron |
 | Storage | JSONL files + JSON metadata |
