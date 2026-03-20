@@ -11,10 +11,13 @@
 **A**: OpenClaw 本身是 MIT 开源免费的。但你需要为 AI 模型 API 付费（Qwen 有免费额度）。
 
 ### Q: 支持哪些 AI 模型？
-**A**: Anthropic Claude、OpenAI GPT、通义千问 Qwen、Google Gemini、小米 MiMo 等。支持任何兼容 OpenAI API 的模型。
+**A**: Anthropic Claude、OpenAI GPT-5.4、通义千问 Qwen、Google Gemini 3.1、DeepSeek、小米 MiMo 等。支持任何兼容 OpenAI API 的模型。
 
 ### Q: 需要翻墙吗？
 **A**: 不一定。如果用 Qwen 模型 + 钉钉渠道，完全不需要翻墙。
+
+### Q: 最新版本是多少？
+**A**: v2026.3.13（2026年3月13日发布）。推荐使用这个版本或 v2026.3.11。
 
 ---
 
@@ -31,6 +34,25 @@
 
 ### Q: 手机上能用吗？
 **A**: 可以。通过 Telegram/钉钉/微信等聊天工具，手机上直接使用。
+
+### Q: ContextEngine 是什么？
+**A**: v2026.3.7 引入的可插拔上下文引擎。以前记忆管理是硬编码的，现在可以像装插件一样切换不同的上下文策略（RAG、压缩、知识图谱等），不用改 Agent 配置。
+
+---
+
+## 微信 / WorkBuddy 相关
+
+### Q: 怎么用微信和 OpenClaw 对话？
+**A**: 最简单的方式是装腾讯官方的 WorkBuddy（https://www.codebuddy.cn/work/），扫码绑定微信客服号，5 分钟搞定。详见第4章第6节。
+
+### Q: WorkBuddy 是什么？
+**A**: 腾讯出品的桌面智能体，兼容 OpenClaw 技能。通过企业微信的微信客服号通道，让你在个人微信里直接和 AI 对话。
+
+### Q: WorkBuddy 关掉电脑还能用吗？
+**A**: 不行，WorkBuddy 需要电脑保持运行。如果需要 7x24 服务，用企业微信官方插件 + 云服务器部署 OpenClaw。
+
+### Q: 企业微信有官方 OpenClaw 支持吗？
+**A**: 有。2026年3月企业微信官方发布了 OpenClaw 适配插件（wecom-openclaw-plugin），支持长连接智能机器人，可用消息、文档、日程、会议等接口。
 
 ---
 

@@ -160,3 +160,47 @@ ls ~/.openclaw/agents/main/sessions/*.jsonl | wc -l
 ---
 
 *下一节：[定时任务 →](02-cron-jobs.md)*
+
+---
+
+## ContextEngine：可插拔上下文引擎（v2026.3.7 新增）
+
+v2026.3.7 是记忆系统的一次大重构。之前的记忆管理靠 `memory_search`、`memory_get` 这些 Tools，需要 Agent 主动调用才能获取历史信息。问题很明显：
+
+- Agent 忘了调就等于没记忆
+- 每次调用工具都额外消耗 Token
+- 重复记录、旧信息不清理，记忆库越来越臃肿
+
+现在改成了 **hooks 机制**：记忆的保存、上下文补充、信息更新全在后台自动完成，Agent 不用操心。
+
+### ContextEngine 生命周期
+
+```
+bootstrap   → 初始化上下文
+ingest      → 注入新信息
+assemble    → 组装最终 Prompt 上下文
+compact     → 压缩/裁剪上下文（控制 Token）
+afterTurn   → 每轮对话后的后处理
+```
+
+### 实际效果
+
+- **不用再手动配置 memorySearch**：系统自动在关键节点处理记忆
+- **记忆衰减**：长期没用到的信息会自动降权，保持记忆库轻量
+- **可插拔**：不喜欢默认策略？可以换成 RAG、知识图谱、无损压缩等插件，Agent 配置完全不用改
+
+### 配置
+
+默认情况下不需要额外配置，升级到 v2026.3.7+ 就自动启用新的 hooks 逻辑。如果想手动指定 ContextEngine 插件：
+
+```json
+{
+  "contextEngine": {
+    "provider": "default",
+    "compactThreshold": 80000,
+    "memoryDecayEnabled": true
+  }
+}
+```
+
+> 如果你之前配了 `memoryFlush`、`memorySearch` 等参数，升级后仍然兼容，但建议迁移到新的 ContextEngine 配置。

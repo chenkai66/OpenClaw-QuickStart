@@ -1,7 +1,7 @@
 # OpenClaw 完整教程——从零到精通
 
-> **OpenClaw** 是 2026 年最火的开源 AI Agent 平台，GitHub 星标超过 24.8 万，登顶历史榜首。
-> 这套教程带你从零开始，一步步掌握 OpenClaw。
+> **OpenClaw** 是 2026 年最火的开源 AI Agent 平台，GitHub 星标超过 25.1 万，登顶历史榜首。
+> 这套教程带你从零开始，一步步掌握 OpenClaw。最新版本：**v2026.3.13**。
 
 ---
 
@@ -13,6 +13,7 @@
 - **8 个实战示例**：可直接运行的代码
 - **配置模板**：拿来就用的配置文件
 - **钉钉对接**：手把手完整教程
+- **微信接入**：WorkBuddy / 企业微信 / openclaw-china 三种方案
 - **百炼 Coding Plan**：阿里云官方 8 模型订阅方案指南
 
 ---
@@ -38,107 +39,85 @@ openclaw-tutorial/
 |   +-- 03-configuration/             # 第3章：配置详解
 |   |   +-- 01-openclaw-json.md        #   openclaw.json 指南
 |   |   +-- 02-model-providers.md      #   模型提供商配置
-|   |   +-- 03-tools-config.md         #   Tools 工具配置
+|   |   +-- 03-tools-config.md         #   26 个 Tools 详解
 |   |   +-- 04-environment-vars.md     #   环境变量
-|   +-- 04-channels/                  # 第4章：渠道接入
+|   +-- 04-channels/                   # 第4章：渠道接入
 |   |   +-- 01-overview.md             #   渠道概览
-|   |   +-- 05-china-im.md             #   国内 IM（钉钉/微信/飞书）
-|   +-- 05-skills/                    # 第5章：Skills 系统
+|   |   +-- 05-china-im.md             #   国内 IM 总览
+|   |   +-- 06-wechat-workbuddy.md     #   ★ 微信接入完全指南（新增）
+|   +-- 05-skills/                     # 第5章：Skills 技能
 |   |   +-- 01-understanding-skills.md #   理解 Skills
-|   |   +-- 04-custom-skills.md        #   自定义 Skill 编写
-|   +-- 06-advanced/                  # 第6章：进阶功能
+|   |   +-- 04-custom-skills.md        #   自定义 Skills
+|   +-- 06-advanced/                   # 第6章：进阶
 |   |   +-- 01-memory-system.md        #   记忆系统
 |   |   +-- 02-cron-jobs.md            #   定时任务
-|   |   +-- 03-advanced-tips.md        #   进阶技巧与配置速查
-|   |   +-- 05-mcp-integration.md      #   MCP 协议集成
-|   +-- 07-use-cases/                 # 第7章：实战案例
+|   |   +-- 03-advanced-tips.md        #   进阶技巧
+|   |   +-- 05-mcp-integration.md      #   MCP 协议
+|   +-- 07-use-cases/                  # 第7章：实战项目
 |   |   +-- 01-second-brain.md         #   第二大脑知识系统
-|   +-- 08-dingtalk-complete/         # 第8章：钉钉对接完全教程
-|   |   +-- 01-prerequisites.md        #   前置准备
-|   |   +-- 02-dingtalk-app-setup.md   #   钉钉应用创建
-|   |   +-- 03-openclaw-dingtalk.md    #   OpenClaw 钉钉配置
-|   |   +-- 04-advanced-features.md    #   高级功能
-|   |   +-- 05-production-deploy.md    #   生产环境部署
+|   +-- 08-dingtalk-complete/          # 第8章：钉钉对接
+|   |   +-- 01~05                      #   5 节保姆级教程
 |   +-- 09-troubleshooting/           # 第9章：故障排查
 |   |   +-- 01-common-issues.md        #   常见问题
 |   |   +-- 02-faq.md                  #   FAQ
-|   +-- 10-coding-plan/              # 第10章：百炼 Coding Plan
+|   +-- 10-coding-plan/               # 第10章：百炼 Coding Plan
 |       +-- 01-coding-plan-guide.md    #   Coding Plan 接入指南
-+-- examples/                         # 实战代码示例
-+-- config/                           # 配置模板
-|   +-- templates/
-|       +-- basic-config.json          #   DashScope 按量付费
-|       +-- advanced-config.json       #   DashScope + 第三方模型
-|       +-- coding-plan-config.json    #   Coding Plan 配置
-|       +-- dingtalk-config.json       #   钉钉对接配置
-+-- scripts/
 ```
 
 ---
 
 ## 快速开始
 
-### 1. 安装 OpenClaw（5 分钟）
-
 ```bash
-# Linux / macOS
-curl -fsSL https://openclaw.ai/install.sh | bash
+# 1. 安装 Node.js v22.16+（推荐 v24）
+node -v
 
-# Windows PowerShell
-iwr -useb https://openclaw.ai/install.ps1 | iex
-```
+# 2. 安装 OpenClaw
+npm install -g @anthropic-ai/openclaw@latest
 
-### 2. 初始化
+# 3. 初始化
+openclaw onboard
 
-```bash
-openclaw onboard --install-daemon
-```
-
-### 3. 开始对话
-
-```bash
-openclaw tui         # 终端界面
-# 或
-openclaw dashboard   # Web 控制面板
+# 4. 启动
+openclaw gateway start
 ```
 
 ---
 
 ## 学习路线
 
-| 阶段 | 章节 | 时间 | 目标 |
-|------|------|------|------|
-| 入门 | 第 1-2 章 | 2 小时 | 安装，理解核心概念 |
-| 进阶 | 第 3-5 章 | 4 小时 | 配置、渠道接入、Skills |
-| 高手 | 第 6、10 章 | 4 小时 | 记忆、Cron、Coding Plan、进阶技巧 |
-| 实战 | 第 7-8 章 | 3 小时 | 实际项目、钉钉对接 |
+| 阶段 | 内容 | 预计时间 |
+|------|------|---------|
+| 入门 | 第1章：安装 → 第一次对话 → Web 面板 | 30 分钟 |
+| 理解 | 第2章：架构 → Gateway → Agent 循环 | 1 小时 |
+| 配置 | 第3章：模型 → Tools → 环境变量 | 1 小时 |
+| 接入 | 第4章：渠道接入（含微信 WorkBuddy） | 30 分钟 |
+| 技能 | 第5章：理解 Skills → 自定义 Skills | 1 小时 |
+| 进阶 | 第6章：记忆 + ContextEngine → 定时任务 → MCP | 2 小时 |
+| 实战 | 第7章：第二大脑知识系统 | 2 小时 |
+| 钉钉 | 第8章：钉钉完整对接 | 1 小时 |
+| 排错 | 第9章：常见问题 + FAQ | 按需 |
+| 百炼 | 第10章：Coding Plan 8 模型方案 | 30 分钟 |
 
 ---
 
 ## API 方案对比
 
-| 方案 | 费用 | 模型 | 适合 |
-|------|------|------|------|
-| **DashScope 按量付费** | 按 token 计 | Qwen 系列 | 轻度使用 |
-| **百炼 Coding Plan**（推荐） | 200 元/月 | 8 个模型 | 日常开发 |
-| **Anthropic** | 按 token 计 | Claude 系列 | 海外用户 |
-
-详见[第 10 章：百炼 Coding Plan](docs/10-coding-plan/01-coding-plan-guide.md)。
+| 方案 | 模型数量 | 价格 | 适合谁 |
+|------|---------|------|--------|
+| DashScope 免费额度 | 1-2 个 Qwen 模型 | 免费 | 新手体验 |
+| DashScope 按量付费 | 全部 Qwen 模型 | 按 Token 计费 | 个人开发者 |
+| **Coding Plan** | **8 个模型**（含第三方） | **200 元/月** | 重度用户 |
+| Anthropic 直连 | Claude 系列 | 按 Token 计费 | 追求质量 |
+| OpenAI 直连 | GPT-5.4 / GPT-4o 等 | 按 Token 计费 | 综合需求 |
 
 ---
 
 ## 相关资源
 
-| 资源 | 链接 |
-|------|------|
-| 官方 GitHub | https://github.com/openclaw/openclaw |
-| 官方文档 | https://docs.openclaw.ai |
-| ClawHub 技能市场 | https://clawhub.ai |
-| Awesome OpenClaw | https://github.com/rohitg00/awesome-openclaw |
-| OpenClaw 中国插件 | https://github.com/BytePioneer-AI/openclaw-china |
-
----
-
-## 许可证
-
-MIT 协议——随便用、随便改、随便分享。
+- [OpenClaw GitHub](https://github.com/openclaw/openclaw) — 25.1 万+ Stars
+- [ClawHub 技能市场](https://clawhub.com) — 社区技能
+- [openclaw-china](https://github.com/BytePioneer-AI/openclaw-china) — 国内 IM 插件
+- [WorkBuddy](https://www.codebuddy.cn/work/) — 腾讯官方桌面智能体，微信直连
+- [企业微信 OpenClaw 插件](https://work.weixin.qq.com/nl/index/openclaw) — 企微官方适配
+- [阿里云百炼](https://bailian.console.aliyun.com/) — Coding Plan 订阅
