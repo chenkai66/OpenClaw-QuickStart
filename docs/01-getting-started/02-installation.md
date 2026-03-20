@@ -1,29 +1,33 @@
-# Chapter 1.2: Installation Guide
+# 第1章·第2节：安装指南
 
-## System Requirements
+> 从零开始，5 分钟装好 OpenClaw。
 
-| Requirement | Minimum | Recommended |
-|-------------|---------|-------------|
-| OS | macOS 11+ / Ubuntu 22.04+ / Windows (WSL2) | Ubuntu 22.04+ |
-| Node.js | **v22.0+** | v22.x (LTS) |
-| RAM | 2 GB | 4-8 GB |
-| CPU | 2 cores | 2-4 cores |
-| Disk | 10 GB SSD | 30 GB+ SSD |
+---
 
-## Step 1: Install Node.js (v22+)
+## 系统要求
 
-> **Important**: OpenClaw requires Node.js **v22.0 or higher**. Earlier versions will not work.
+| 项目 | 最低要求 | 推荐配置 |
+|------|---------|---------|
+| 操作系统 | macOS 11+ / Ubuntu 22.04+ / Windows (WSL2) | Ubuntu 22.04+ |
+| Node.js | **v22.16+** | v24.x（官方推荐） |
+| 内存 | 2 GB | 4-8 GB |
+| CPU | 2 核 | 2-4 核 |
+| 存储 | 10 GB SSD | 30 GB+ SSD |
 
-Check existing version:
+## 第一步：安装 Node.js
+
+> **注意**：OpenClaw 要求 Node.js **v22.16 或更高版本**，低版本跑不起来。官方推荐用 v24。
+
+先看看你现在装的版本：
 ```bash
-node -v   # Need v22.0+
+node -v   # 需要 v22.16+
 ```
 
 ### Ubuntu / Debian
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
-node --version  # v22.x.x
+node --version  # 确认 v22.x.x
 ```
 
 ### CentOS / RHEL / Alibaba Cloud Linux
@@ -37,7 +41,7 @@ sudo yum install -y nodejs
 brew install node@22
 ```
 
-### Using nvm (Universal)
+### 用 nvm 管理（通用方案）
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 source ~/.bashrc
@@ -45,89 +49,90 @@ nvm install 22
 nvm use 22
 ```
 
-## Step 2: Install OpenClaw
+## 第二步：安装 OpenClaw
 
-### Method A: Official Install Script (Recommended)
+### 方式 A：官方安装脚本（推荐）
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-### Method B: npm
+### 方式 B：通过 npm 安装
 ```bash
 npm install -g openclaw@latest
 openclaw --version  # 2026.3.x
 ```
 
-## Step 3: Onboarding
+## 第三步：初始化引导
 
-Run the interactive onboarding wizard:
+运行交互式引导向导：
 ```bash
 openclaw onboard --install-daemon
 ```
 
-The wizard will ask:
-| Prompt | Recommended Choice |
-|--------|-------------------|
+向导会问你几个问题，建议这样选：
+
+| 提示 | 建议选择 |
+|------|---------|
 | I understand this is powerful and risky | **Yes** |
 | Onboarding mode | **QuickStart** |
-| Model/auth provider | **Skip for now** (configure later) |
+| Model/auth provider | **Skip for now**（后面再配） |
 | Select channel | **Skip for now** |
-| Configure skills? | **No** (configure later) |
+| Configure skills? | **No**（后面再配） |
 | Enable hooks? | **Skip for now** |
 | How to hatch your bot? | **Hatch in TUI** |
 
-## Step 4: Configure API Key
+## 第四步：配置 API Key
 
-### Option A: DashScope API (Recommended for China)
+### 方案 A：通义千问 DashScope API（国内推荐）
 
-1. Visit https://dashscope.console.aliyun.com/
-2. Sign up / log in, create an API Key
+1. 打开 https://dashscope.console.aliyun.com/
+2. 注册登录，创建一个 API Key
 
-Add to `~/.bashrc` or `~/.zshrc`:
+把下面两行加到 `~/.bashrc` 或 `~/.zshrc`：
 ```bash
-export OPENAI_API_KEY="your-dashscope-api-key"
+export OPENAI_API_KEY="你的DashScope-API-Key"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 ```
 
-Reload: `source ~/.zshrc`
+生效：`source ~/.zshrc`
 
-### Option B: DashScope Coding Plan (Best Value)
+### 方案 B：百炼 Coding Plan（性价比最高）
 
-If you subscribe to [Coding Plan](https://help.aliyun.com/zh/model-studio/coding-plan) (200 CNY/month, 8 models included):
+如果你开通了[百炼 Coding Plan](https://help.aliyun.com/zh/model-studio/coding-plan)（200 元/月，包含 8 个模型）：
 
 ```bash
-export OPENAI_API_KEY="sk-sp-xxxxx"   # Coding Plan key starts with sk-sp-
+export OPENAI_API_KEY="sk-sp-xxxxx"   # Coding Plan 的 Key 以 sk-sp- 开头
 export OPENAI_BASE_URL="https://coding.dashscope.aliyuncs.com/v1"
 ```
 
-> **Warning**: Coding Plan API Key (`sk-sp-`) and regular DashScope key (`sk-`) are NOT interchangeable. Don't mix them!
+> **别搞混了**：Coding Plan 的 Key（`sk-sp-` 开头）和普通 DashScope Key（`sk-` 开头）不能混用，Base URL 也不一样。
 
-### Option C: Anthropic API
+### 方案 C：Anthropic API
 ```bash
-export ANTHROPIC_API_KEY="your-anthropic-api-key"
+export ANTHROPIC_API_KEY="你的Anthropic-API-Key"
 ```
 
-## Step 5: First Chat
+## 第五步：试跑一下
 
 ```bash
 openclaw tui
 ```
 
-Type a message to test. Then verify session files:
+随便输入点什么测试一下。然后看看会话文件有没有生成：
 ```bash
 ls -la ~/.openclaw/agents/main/sessions/
 ```
 
-## Step 6: Gateway (Optional)
+## 第六步：启动 Gateway（可选）
 
-Gateway enables multi-channel routing (DingTalk, Telegram, Discord):
+Gateway 是多渠道接入（钉钉、Telegram、Discord 等）的前提：
 ```bash
 openclaw gateway install
 openclaw gateway
-# Listens on ws://127.0.0.1:18789
+# 默认监听 ws://127.0.0.1:18789
 ```
 
-For production (auto-start on boot):
+生产环境建议设成开机自启：
 ```bash
 cat > /etc/systemd/system/openclaw-gateway.service << 'SVCEOF'
 [Unit]
@@ -144,15 +149,15 @@ SVCEOF
 systemctl daemon-reload && systemctl enable --now openclaw-gateway
 ```
 
-## Quick Checklist
+## 检查清单
 
-- [ ] Node.js >= 22
-- [ ] OpenClaw installed (`openclaw --version`)
-- [ ] Onboarding complete
-- [ ] API Key configured (DashScope / Coding Plan / Anthropic)
-- [ ] `openclaw tui` works
-- [ ] Session files saved
+- [ ] Node.js >= 22.16
+- [ ] OpenClaw 已安装（`openclaw --version`）
+- [ ] 引导向导跑完了
+- [ ] API Key 配好了（DashScope / Coding Plan / Anthropic）
+- [ ] `openclaw tui` 能正常对话
+- [ ] 会话文件已生成
 
 ---
 
-*Next: [First Chat →](03-first-chat.md)*
+*下一节：[第一次对话 →](03-first-chat.md)*

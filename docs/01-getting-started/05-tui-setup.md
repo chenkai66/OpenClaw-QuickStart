@@ -1,57 +1,62 @@
-# Chapter 1.5: OpenClaw TUI Setup Guide
+# 第1章·第5节：TUI 终端界面
 
-## TUI Overview
+> 在终端里直接和 OpenClaw 对话，开发者最趁手的用法。
 
-OpenClaw TUI provides interactive chat in your terminal with full agent capabilities.
+---
 
+## TUI 是什么
+
+TUI（Terminal User Interface）就是在终端里跟 OpenClaw 交互的界面，支持完整的 Agent 能力：工具调用、文件操作、代码执行等。
+
+启动后大概长这样：
 ```
 🦞 OpenClaw 2026.x.x
 session agent:main:main
 
-> your message here
+> 在这里输入你的消息
 ```
 
-## Launch
+## 启动方式
 
 ```bash
-# Set API key (DashScope)
-export OPENAI_API_KEY="your-dashscope-api-key"
+# 先确保环境变量配好了（DashScope 为例）
+export OPENAI_API_KEY="你的DashScope-API-Key"
 export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-# Launch TUI
+# 启动 TUI
 openclaw tui
 ```
 
-Or add env vars to `~/.zshrc` permanently, then just `openclaw tui`.
+如果你已经把环境变量写进了 `~/.zshrc`，直接 `openclaw tui` 就行。
 
-## TUI Commands
+## 常用命令
 
-| Command | Description |
-|---------|-------------|
-| `/model <name>` | Switch model (e.g. `/model qwen3-max`) |
-| `/help` | Show help |
-| `Ctrl+C` or `/exit` | Exit |
+| 命令 | 说明 |
+|------|------|
+| `/model <名称>` | 切换模型，比如 `/model qwen3-max` |
+| `/help` | 查看帮助 |
+| `Ctrl+C` 或 `/exit` | 退出 |
 
-## DashScope Available Models
+## DashScope 可用模型
 
-| Model ID | Best For | Context | Price (per M tokens) |
-|----------|----------|---------|---------------------|
-| `qwen3-max` | Complex tasks, strongest | 262K | Input 2.5 / Output 10 |
-| `qwen3.5-plus` | Balanced speed & quality | 1M | Input 0.8 / Output 4.8 |
-| `qwen3.5-flash` | Simple tasks, fastest | 1M | Input 0.2 / Output 2 |
+| 模型 ID | 适合场景 | 上下文长度 | 价格（每百万 token） |
+|---------|---------|-----------|-------------------|
+| `qwen3-max` | 复杂任务，能力最强 | 262K | 输入 2.5 / 输出 10 |
+| `qwen3.5-plus` | 均衡，兼顾速度和质量 | 1M | 输入 0.8 / 输出 4.8 |
+| `qwen3.5-flash` | 简单任务，速度最快 | 1M | 输入 0.2 / 输出 2 |
 
-Third-party models also available on DashScope: DeepSeek, Kimi, GLM, MiniMax.
+DashScope 还接入了第三方模型：DeepSeek、Kimi、GLM、MiniMax 等，都可以直接用。
 
-## Verify Models
+## 查看可用模型
 
 ```bash
 openclaw models list
 ```
 
-## Session Storage
+## 会话存储
 
-All conversations auto-save to `~/.openclaw/agents/main/sessions/`
+所有对话会自动保存到 `~/.openclaw/agents/main/sessions/`，下次打开还能接着聊。
 
 ---
 
-*Next: [Architecture →](../02-core-concepts/01-architecture.md)*
+*下一节：[架构设计 →](../02-core-concepts/01-architecture.md)*

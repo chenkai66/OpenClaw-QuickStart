@@ -1,248 +1,157 @@
-# Chapter 9.1: Common Issues & Solutions
+# 第9章·第1节：常见问题与解决方案
+
+> 踩过的坑，帮你少走弯路。
 
 ---
 
-## 1. "openclaw: command not found"
+## 安装相关
 
-**Cause:** OpenClaw not in PATH or not installed.
+### "command not found: openclaw"
+
+OpenClaw 没装上或者 PATH 没配好。
 
 ```bash
-# Check if installed
+# 检查是否安装
 which openclaw
 npm list -g openclaw
 
-# Fix
+# 重新安装
 npm install -g openclaw@latest
-# Or reinstall
-curl -fsSL https://openclaw.ai/install.sh | bash
+
+# 如果用 nvm，确认 Node 版本
+nvm use 22
+```
+
+### "Node.js version too old"
+
+OpenClaw 要求 Node.js v22.16 以上。
+
+```bash
+node -v
+# 如果低于 v22.16，升级：
+nvm install 22
+nvm use 22
 ```
 
 ---
 
-## 2. Gateway Won't Start
+## 连接相关
 
-**Symptom:** `openclaw gateway` exits immediately.
+### "API key invalid" 或 "401 Unauthorized"
 
-```bash
-# Check port conflict
-lsof -i :18789
-# Kill conflicting process
-kill $(lsof -t -i :18789)
-
-# Check status
-openclaw status
-openclaw gateway --verbose
-```
-
----
-
-## 3. API Key Invalid / Authentication Error
-
-**Symptom:** "Unauthorized" or "Invalid API Key"
+API Key 配置有问题。
 
 ```bash
-# Check environment variables
+# 检查环境变量
 echo $OPENAI_API_KEY
 echo $OPENAI_BASE_URL
 
-# Common mistakes:
-# 1. Mixing Coding Plan key (sk-sp-xxx) with regular DashScope URL
-# 2. Mixing regular key (sk-xxx) with Coding Plan URL
-# 3. Key has expired or been regenerated
+# DashScope 用户
+# Key 应该以 sk- 开头
+# URL 应该是 https://dashscope.aliyuncs.com/compatible-mode/v1
+
+# Coding Plan 用户
+# Key 应该以 sk-sp- 开头
+# URL 应该是 https://coding.dashscope.aliyuncs.com/v1
 ```
 
-**Fix:** Match the correct pair:
+> 常见错误：Coding Plan 的 Key 和普通 DashScope Key 搞混了。两者的 Key 前缀和 Base URL 都不一样。
 
-| Key Type | API Key Format | Base URL |
-|----------|---------------|----------|
-| Regular DashScope | `sk-xxxxx` | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| Coding Plan | `sk-sp-xxxxx` | `https://coding.dashscope.aliyuncs.com/v1` |
-| Anthropic | `sk-ant-xxxxx` | (no override needed) |
+### "Model not found"
 
----
-
-## 4. Model Not Found
-
-**Symptom:** "Model not available" error
+模型 ID 写错了。
 
 ```bash
-# List available models
+# 查看可用模型
 openclaw models list
-
-# Common cause: model ID typo in openclaw.json
-# Correct IDs (DashScope):
-#   qwen3-max, qwen3.5-plus, qwen3.5-flash
-# Correct IDs (Coding Plan):
-#   qwen3.5-plus, qwen3-max-2026-01-23, qwen3-coder-next,
-#   qwen3-coder-plus, kimi-k2.5, glm-5, glm-4.7, MiniMax-M2.5
 ```
 
----
+DashScope 常用模型 ID：`qwen3-max`、`qwen3.5-plus`、`qwen3.5-flash`
 
-## 5. Cron Task Not Triggering
-
-**Cause 99%:** Timezone issue — no `tz` field means UTC.
-
-```json
-{
-  "tools": {
-    "cron": {
-      "enabled": true,
-      "tz": "Asia/Shanghai"
-    }
-  }
-}
-```
-
-Also check `delivery.mode`:
-- `"announce"` = sends message to your channel
-- Not set = runs silently, you won't see output
-
----
-
-## 6. AI "Forgets" Mid-Conversation
-
-**Cause:** Context compression triggered.
-
-**Fix:** Enable memoryFlush (see [Advanced Tips](../06-advanced/03-advanced-tips.md)):
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "compaction": {
-        "reserveTokensFloor": 20000,
-        "memoryFlush": {
-          "enabled": true,
-          "softThresholdTokens": 4000
-        }
-      }
-    }
-  }
-}
-```
-
-**Quick workaround:** `/compact Keep all technical decisions`
-
----
-
-## 7. DingTalk Bot Not Responding
+### "Connection refused" 或 Gateway 启动失败
 
 ```bash
-# Check gateway is running
+# 检查端口是否被占用
+lsof -i :18789
+
+# 如果被占用，杀掉旧进程
+kill $(lsof -t -i :18789)
+
+# 重启 Gateway
+openclaw gateway restart
+```
+
+---
+
+## 渠道相关
+
+### 钉钉收不到消息
+
+1. 检查 Gateway 是否在运行：`openclaw gateway status`
+2. 检查钉钉配置中的 `clientId`、`clientSecret` 是否正确
+3. 确认机器人在钉钉后台已发布
+4. 检查日志：`openclaw gateway --verbose`
+
+### Telegram 机器人不回复
+
+1. 确认 Bot Token 正确
+2. 检查是否配置了 dmPolicy
+3. 如果是新用户，需要先完成 pairing：`openclaw pairing approve telegram <code>`
+
+---
+
+## 记忆相关
+
+### AI 总是忘记之前说过的话
+
+1. 开启 memoryFlush（见[进阶技巧](../06-advanced/03-advanced-tips.md)）
+2. 检查 MEMORY.md 是否太大（应该 < 40 行）
+3. 确认是在主会话（Main session）中，群聊和子 Agent 默认不读取 MEMORY.md
+
+### memorySearch 搜不到东西
+
+1. 确认已配置 Embedding API
+2. 检查记忆文件中是否有 #标签
+3. 试试更具体的搜索词
+
+---
+
+## 性能相关
+
+### 回复速度太慢
+
+1. 换个快一点的模型：`/model qwen3.5-flash`
+2. 检查网络到 DashScope API 的延迟
+3. 如果上下文太长，用 `/compact` 压缩
+
+### Token 消耗太快
+
+1. 使用模型分级策略，简单任务用便宜模型
+2. 开启 memoryFlush，避免上下文重复膨胀
+3. 定期清理旧的会话文件
+
+---
+
+## 常用诊断命令
+
+```bash
+# 检查 OpenClaw 状态
 openclaw status
+openclaw doctor
 
-# Check DingTalk config
-cat ~/.openclaw/openclaw.json | grep -A 10 dingtalk
+# 查看 Gateway 日志
+openclaw gateway --verbose
 
-# Common issues:
-# 1. AppKey/AppSecret incorrect
-# 2. Robot not enabled in DingTalk admin
-# 3. Stream mode not configured
-# 4. Gateway not restarted after config change
-openclaw gateway restart
+# 检查配置
+cat ~/.openclaw/openclaw.json | python3 -m json.tool
+
+# 检查会话
+ls -lt ~/.openclaw/agents/main/sessions/ | head
+
+# 检查记忆
+wc -l ~/.openclaw/workspace/MEMORY.md
 ```
 
 ---
 
-## 8. Discord Bot Online But Not Replying
-
-**99% cause:** MESSAGE CONTENT INTENT not enabled.
-
-Fix:
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Select your bot -> Bot tab
-3. Scroll to "Privileged Gateway Intents"
-4. Enable: **MESSAGE CONTENT INTENT**
-5. Click Save Changes
-6. `openclaw gateway restart`
-
----
-
-## 9. Permission Denied on Gateway Service
-
-```bash
-# Check file permissions
-ls -la /etc/systemd/system/openclaw-gateway.service
-
-# Ensure openclaw binary is accessible
-which openclaw
-
-# If using systemd, reload and restart
-systemctl daemon-reload
-systemctl restart openclaw-gateway
-journalctl -u openclaw-gateway -n 50 --no-pager
-```
-
----
-
-## 10. Session Files Not Saving
-
-```bash
-# Check sessions directory exists
-ls -la ~/.openclaw/agents/main/sessions/
-
-# Check disk space
-df -h
-
-# Check file permissions
-ls -la ~/.openclaw/
-```
-
----
-
-## 11. Rate Limit Exceeded (Coding Plan)
-
-**Symptom:** 429 errors or "rate limit" messages.
-
-Pro Plan limits:
-- 6,000 requests per 5 hours
-- 45,000 requests per week
-- 90,000 requests per month
-
-**Strategies:**
-- Use lighter models for simple tasks (`/model MiniMax-M2.5`)
-- Use `/new` to start fresh sessions (shorter context = fewer API calls per message)
-- Space out heavy work sessions
-
----
-
-## 12. Skills Not Triggering
-
-```bash
-# Check skill is installed
-openclaw skills list
-
-# Common causes:
-# 1. Skill description doesn't match your trigger words
-# 2. Skill SKILL.md not in the right directory
-# 3. Gateway hasn't loaded the skill (restart needed)
-openclaw gateway restart
-```
-
----
-
-## Quick Diagnostic Script
-
-```bash
-#!/bin/bash
-echo "=== OpenClaw Diagnostics ==="
-echo "Node.js: $(node -v 2>/dev/null || echo 'NOT INSTALLED')"
-echo "OpenClaw: $(openclaw --version 2>/dev/null || echo 'NOT INSTALLED')"
-echo "Gateway: $(openclaw status 2>/dev/null | head -3)"
-echo ""
-echo "API Config:"
-echo "  OPENAI_API_KEY: $([ -n "$OPENAI_API_KEY" ] && echo "SET (${OPENAI_API_KEY:0:8}...)" || echo "NOT SET")"
-echo "  OPENAI_BASE_URL: ${OPENAI_BASE_URL:-NOT SET}"
-echo "  ANTHROPIC_API_KEY: $([ -n "$ANTHROPIC_API_KEY" ] && echo "SET" || echo "NOT SET")"
-echo ""
-echo "Ports:"
-lsof -i :18789 2>/dev/null || echo "  Port 18789: FREE"
-echo ""
-echo "Disk: $(df -h ~ | tail -1 | awk '{print $4}') available"
-echo "Sessions: $(ls ~/.openclaw/agents/main/sessions/ 2>/dev/null | wc -l) files"
-```
-
----
-
-*Next: [FAQ →](02-faq.md)*
+*下一节：[FAQ →](02-faq.md)*

@@ -1,402 +1,150 @@
-# Chapter 7.1: Real Project — Second Brain Knowledge System
+# 第7章·第1节：实战项目——第二大脑知识系统
 
-> A complete, production-ready project that combines OpenClaw + Claude Code into a unified personal knowledge management system.
+> 一个完整的实战项目，把 OpenClaw + Claude Code 打造成你的个人知识管理系统。
 
-## Project Overview
+## 项目概览
 
-**openclaw-second-brain** is a real-world project that demonstrates the full power of OpenClaw as an AI Agent infrastructure. It automatically:
+**openclaw-second-brain** 是一个真实的生产项目，展示了 OpenClaw 作为 AI Agent 基础设施的完整能力。它能自动：
 
-1. Captures conversations from OpenClaw TUI and Claude Code
-2. Processes them through LLM-powered summarization pipelines
-3. Generates structured knowledge notes and logs
-4. Maintains a unified memory system with knowledge graph
-5. Runs automated agents for daily research and knowledge sync
+1. 捕获 OpenClaw TUI 和 Claude Code 的对话记录
+2. 通过 LLM 驱动的流水线做摘要和知识提取
+3. 生成结构化的知识笔记和日志
+4. 维护一套统一的记忆系统
+5. 通过 Cron 自动运行研究和知识同步任务
 
 ```
-Claude Code Conversations      OpenClaw TUI Conversations
+Claude Code 对话             OpenClaw TUI 对话
     |                              |
     +-- ~/.claude/projects/       +-- ~/.openclaw/agents/main/sessions/
     |                              |
     +-------------+----------------+
                   |
-          Enhanced Knowledge Agent
-          (runs every hour via cron)
+          知识同步 Agent（每小时 Cron）
                   |
-          +-- Auto-discover Claude Code sessions
-          +-- Format conversion to unified format
-          +-- Deduplication (avoid reprocessing)
-          +-- LLM knowledge extraction
+          +-- 自动发现 Claude Code 会话
+          +-- 格式统一转换
+          +-- 去重（避免重复处理）
+          +-- LLM 知识提取
                   |
-          Second Brain Knowledge Base
-          (Notes + Logs + Summary)
+          第二大脑知识库
+          （笔记 + 日志 + 摘要）
                   |
-          Memory System Update
-          (daily at midnight)
+          记忆系统更新（每晚）
                   |
-          Next conversation carries memory
+          下次对话自动带上记忆
 ```
 
-## Tech Stack
+## 技术栈
 
-| Component | Technology |
-|-----------|-----------|
-| Runtime | Node.js 22+ |
-| Frontend | Next.js (Web UI) |
-| Knowledge Graph | D3.js |
-| AI Models | Claude Sonnet 4.5 (primary), Qwen models (backup) |
-| LLM Pipeline | TypeScript custom summarization |
-| API | DashScope API (OpenAI-compatible) or Anthropic API |
-| Process Manager | systemd |
-| Scheduling | OpenClaw Cron |
-| Storage | JSONL files + JSON metadata |
+| 组件 | 技术 |
+|------|------|
+| 运行时 | Node.js 22+ |
+| 前端 | Next.js（Web 界面） |
+| 知识图谱 | D3.js |
+| AI 模型 | Claude Sonnet 4.5（主力）、Qwen 系列（备用） |
+| LLM 流水线 | TypeScript 自定义摘要提取 |
+| API | DashScope API（OpenAI 兼容）或 Anthropic API |
+| 进程管理 | systemd |
 
-## Project Structure
+## 核心组件
 
-```
-openclaw-second-brain/
-+-- package.json              # npm scripts and dependencies
-+-- .env.example              # Environment template
-+-- summary-config.json       # LLM pipeline configuration
-|
-+-- lib/                      # Core library
-|   +-- claude-code-adapter.ts    # Claude Code session converter
-|   +-- ai-organizer.ts          # AI organization
-|   +-- content-manager.ts       # Content management
-|   +-- search.ts                # Full-text search
-|   +-- graph-builder.ts         # Knowledge graph
-|   +-- summary/                 # Summarization pipeline
-|       +-- conversation-processor.ts
-|       +-- llm-integration.ts
-|       +-- clustering.ts
-|       +-- content-merger.ts
-|
-+-- skills/                   # OpenClaw Agent Skills
-|   +-- knowledge-agent-skill/
-|   |   +-- SKILL.md             # Knowledge sync agent
-|   |   +-- config.json          # Agent configuration
-|   +-- research-agent-skill/
-|   |   +-- SKILL.md             # Daily research agent
-|   |   +-- config.json
-|   +-- project-developer-skill/
-|   |   +-- SKILL.md             # Project development agent
-|   +-- social-research-skill/
-|       +-- SKILL.md             # Social research agent
-|       +-- README.md
-|
-+-- scripts/                  # Shell scripts
-|   +-- openclaw-tui-with-keys.sh   # Launch TUI with API keys
-|   +-- test-enhanced-sync.sh       # Test knowledge sync
-|   +-- health-check.sh            # Health check
-|
-+-- content/                  # Generated content
-|   +-- notes/                    # Knowledge notes (Markdown)
-|   +-- logs/                     # Conversation logs
-|   +-- reports/                  # Research reports
-|
-+-- data/                     # Data storage
-    +-- conversations.json        # Conversation metadata
-    +-- summaries/                # Summary JSON files
-    +-- tag-library.json          # Tag taxonomy
-```
+### 1. 知识同步 Agent
 
-## Setting Up the Project
-
-### 1. Clone the Repository
+每小时通过 Cron 运行，自动处理新的对话记录：
 
 ```bash
-git clone https://github.com/your-username/openclaw-second-brain.git
-cd openclaw-second-brain
-```
-
-### 2. Create Environment File
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env`:
-
-```bash
-# OpenAI Compatible API Configuration
-OPENAI_API_KEY=your-dashscope-api-key
-OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-
-# OpenClaw Sessions Path (usually no need to change)
-OPENCLAW_SESSIONS_PATH=/home/youruser/.openclaw/agents/main/sessions
-
-# Optional
-PORT=3000
-LOG_LEVEL=info
-```
-
-### 3. Install Dependencies
-
-```bash
-npm install
-```
-
-### 4. Initialize Summary System
-
-```bash
-npm run summary:init
-```
-
-### 5. Start Development Server
-
-```bash
-npm run dev
-# Visit http://localhost:3000
-```
-
-## Session Format (JSONL)
-
-OpenClaw stores conversations in JSONL (JSON Lines) format:
-
-```jsonl
-{"type":"session","version":3,"id":"session-id","timestamp":"2026-02-27T03:00:00.000Z","cwd":"/path"}
-{"type":"message","id":"msg-1","timestamp":"2026-02-27T03:00:01.000Z","message":{"role":"user","content":[{"type":"text","text":"Hello"}]}}
-{"type":"message","id":"msg-2","timestamp":"2026-02-27T03:00:02.000Z","message":{"role":"assistant","content":[{"type":"text","text":"Hi!"}]}}
-```
-
-The Knowledge Agent reads these files and:
-1. Reads all `.jsonl` files
-2. Skips `.jsonl.lock` files (being written)
-3. Extracts `type: "message"` records
-4. Keeps only `role: "user"` and `role: "assistant"` messages
-5. Filters conversations shorter than 50 characters
-
-## Configuring Cron Jobs
-
-### Knowledge Sync (Every Hour)
-
-```bash
-openclaw cron add \
-  --name "Knowledge Sync" \
-  --cron "0 * * * *" \
-  --session isolated \
-  --message "cd /path/to/openclaw-second-brain && npm run agent:knowledge" \
-  --delivery none
-```
-
-### Daily Research Report (23:00 daily)
-
-```bash
-openclaw cron add \
-  --name "Daily Research" \
-  --cron "0 23 * * *" \
-  --tz "Asia/Shanghai" \
-  --session isolated \
-  --message "cd /path/to/openclaw-second-brain && npm run agent:research" \
-  --delivery none
-```
-
-### Managing Cron Jobs
-
-```bash
-# List all jobs
-openclaw cron list
-
-# View execution history
-openclaw cron runs --name "Knowledge Sync" --limit 10
-
-# Manually trigger a job
-openclaw cron run --name "Knowledge Sync"
-
-# Disable a job
-openclaw cron edit <job-id> --enabled false
-
-# Enable a job
-openclaw cron edit <job-id> --enabled true
-
-# Delete a job
-openclaw cron remove <job-id>
-```
-
-## The Knowledge Agent in Detail
-
-The Knowledge Agent is the heart of the system. Here is the actual SKILL.md:
-
-```markdown
-# KNOWLEDGE-AGENT Skill
-
-> You are a sub-Agent called by cron jobs, responsible for executing
-> the complete conversation summary data pipeline.
-
-## Execution Command
-
 npm run agent:knowledge
-
-This script automatically completes:
-1. Initialize system - verify config, ensure directories exist
-2. Discover Claude Code conversations - auto-find and parse session files
-3. Unified format conversion - convert Claude Code to OpenClaw format
-4. Process conversations - read unprocessed conversations, generate summaries
-5. Convert to Markdown - create/update Notes and Logs files
-6. Create backup - auto-backup data
-7. Statistical analysis - return complete system statistics
-8. Return results - structured JSON for Agent use
 ```
 
-### Conversation Sources
+工作流程：
+1. 扫描 OpenClaw 和 Claude Code 的会话目录
+2. 找到未处理的新对话
+3. 调用 LLM 提取关键信息和结论
+4. 生成结构化笔记，保存到 `content/notes/`
+5. 更新知识索引
 
-The agent processes two sources:
+### 2. 研究 Agent
 
-| Source | Path | Format | Auto-discover |
-|--------|------|--------|--------------|
-| OpenClaw TUI | `~/.openclaw/agents/main/sessions/*.jsonl` | Native OpenClaw | Yes |
-| Claude Code | `~/.claude/projects/*/xxx.jsonl` | Claude format (auto-converted) | Yes |
-
-### Output Locations
-
-| Type | Path | Description |
-|------|------|-------------|
-| Notes | `content/notes/` | Knowledge documents |
-| Logs | `content/logs/` | Conversation records |
-| Summaries | `data/summaries/` | JSON format metadata |
-| Tracking | `~/.openclaw/workspace/memory/processed-claude-code-sessions.json` | Processed sessions |
-
-## The Research Agent
-
-Runs daily, analyzes conversation topics, and generates research reports:
+每天运行一次，根据你最近的对话主题自动做研究：
 
 ```bash
 npm run agent:research
 ```
 
-### Workflow
+工作流程：
+1. 分析最近 7 天的热门话题
+2. 提取高频关键词
+3. 在 Google、GitHub、HackerNews 上搜索
+4. 生成研究报告，保存到 `content/reports/`
 
-1. **Get hot topics** — calls `summaryRetriever.getTopTopics(10)`, filters last 7 days
-2. **Get hot keywords** — calls `summaryRetriever.getTopKeywords(20)`
-3. **Get statistics** — total conversations, topics, domains
-4. **Agent searches internet** — Google, GitHub, HN, Dev.to
-5. **Generate research report** — saves to `content/reports/YYYY-MM-DD-topic.md`
+### 3. 社区研究 Agent
 
-### Report Structure
+按需触发的研究助手，分析社区讨论：
 
-```markdown
----
-date: YYYY-MM-DD
-type: daily-research
-title: Research Topic Title
-tags: [tag1, tag2]
-ai_generated: true
-sources: [url1, url2]
----
+| 研究类型 | 说明 |
+|---------|------|
+| 趋势分析 | 搜索近 3 个月讨论，分析趋势 |
+| 工具对比 | 收集真实用户评价，对比优劣 |
+| 最佳实践 | 搜索实战经验和代码示例 |
+| 社区观点 | 分析共识和争议 |
 
-# Research Topic Title
-
-## Research Background
-## Key Findings
-## Technical Deep Analysis
-## Best Practices
-## Recommended Actions
-## References
+用法：
+```bash
+# 在对话中直接说
+"帮我调研一下 Cursor 和 Copilot 的对比"
 ```
 
-## The Social Research Agent
+## 记忆系统架构
 
-An on-demand research agent that analyzes community discussions:
+系统使用 4 层记忆架构：
 
-```
-User Request → LLM Analyzes Intent → Generate Research Plan → Parallel Search → LLM Integration → Generate Report
-```
+| 层级 | 持久性 | 内容 |
+|------|-------|------|
+| 用户偏好 | 长期 | 姓名、习惯、沟通风格 |
+| 决策历史 | 中期 | 过去的选择和项目决策 |
+| 技术知识 | 中短期 | 学到的概念、代码模式 |
+| 对话历史 | 短期 | 最近的交互记录 |
 
-### Research Types
+## 生产环境经验
 
-| Type | Description |
-|------|-------------|
-| Trend Analysis | Search 3-month discussions, analyze trends |
-| Tool Comparison | Collect real user reviews, compare pros/cons |
-| Best Practices | Search practical experience, code examples |
-| Community Opinion | Analyze consensus and controversy |
-
-### Usage
+### 1. 让对话有意义
 
 ```bash
-# Via API
-curl -X POST http://localhost:3000/api/social-research/analyze \
-  -H "Content-Type: application/json" \
-  -d {query: Cursor vs Copilot comparison}
-
-# Or just ask in conversation
-"Help me research [topic]"
+# 给重要对话设标题
+openclaw chat --title "React 性能优化" "讨论 React 性能"
 ```
 
-## The Project Developer Agent
-
-A multi-stage workflow agent for building monetizable projects:
-
-### Phases
-
-1. **Research** (2-4h): Market analysis, feasibility study, proposal
-2. **Design** (2-3h): Tech stack, architecture, development plan
-3. **Development** (12-16h): Environment setup, core features, testing, deployment
-4. **Operations** (ongoing): User acquisition, analytics, iteration
-
-### Virtual Team Roles
-
-| Role | Responsibilities |
-|------|-----------------|
-| Product Manager | Requirements, UX design, priority management |
-| Tech Architect | Technology selection, architecture, code review |
-| Frontend Developer | UI, interactions, frontend optimization |
-| Backend Developer | API, database, business logic, performance |
-| QA Engineer | Test cases, automation, quality assurance |
-| Operations | Marketing, user ops, data analysis |
-
-## Memory System Architecture
-
-The system uses a 4-layer memory architecture:
-
-| Layer | Persistence | Content |
-|-------|------------|---------|
-| User Preferences | Long-term | Names, habits, communication style |
-| Decision History | Medium-term | Past choices, project decisions |
-| Technical Knowledge | Short to medium-term | Learned concepts, code patterns |
-| Conversation History | Short-term | Recent interactions |
-
-## Best Practices from Production
-
-### 1. Have Meaningful Conversations
+### 2. 归档旧会话
 
 ```bash
-# Set titles for important conversations
-openclaw chat --title "React Performance Optimization" "Discuss React performance"
-```
-
-### 2. Archive Old Sessions
-
-```bash
-# Archive sessions older than 30 days
+# 归档 30 天前的会话
 openclaw session archive --older-than 30d
 
-# Or manual backup
+# 手动备份
 cp -r ~/.openclaw/agents/main/sessions \
   ~/.openclaw/backups/sessions-$(date +%Y%m%d)
 ```
 
-### 3. Monitor Cron Jobs
+### 3. 监控 Cron 任务
 
 ```bash
-# Weekly check on job execution
+# 查看最近执行记录
 openclaw cron runs --name "Knowledge Sync" --limit 50
 
-# Check failed jobs
+# 查看失败的任务
 openclaw cron runs --name "Knowledge Sync" --failed
 ```
 
-### 4. Protect Your API Keys
+### 4. 保护 API Key
 
-Add to `.gitignore`:
+在 `.gitignore` 里加上：
 
 ```gitignore
-# OpenClaw config and auth files (contain API keys)
+# OpenClaw 配置和认证文件（包含 API Key）
 .openclaw/
 **/auth-profiles.json
-scripts/openclaw-tui*.sh
-scripts/*-with-keys.sh
 
-# Environment variables and keys
+# 环境变量和密钥
 .env
 .env.local
 *.key
@@ -405,4 +153,4 @@ scripts/*-with-keys.sh
 
 ---
 
-*Next: [Code Reviewer Bot →](02-code-reviewer.md)*
+*下一节：[钉钉对接前置准备 →](../08-dingtalk-complete/01-prerequisites.md)*

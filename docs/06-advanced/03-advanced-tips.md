@@ -1,20 +1,20 @@
-# Chapter 6.3: Advanced Tips & Configuration Cheatsheet
+# 第6章·第3节：进阶技巧与配置速查
 
-> Real-world techniques from power users to get the most out of OpenClaw.
+> 老手们总结出来的实用技巧，一小时让你的 OpenClaw 脱胎换骨。
 
 ---
 
-## 1. Fix "AI Amnesia" with memoryFlush
+## 1. 解决"AI 失忆"：memoryFlush
 
-### The Problem
+### 问题
 
-OpenClaw compresses old conversation when approaching the model's context window limit. During compression, details may be lost — the AI "forgets" what you discussed.
+对话太长时，OpenClaw 会压缩旧消息来腾出上下文空间。压缩过程中，细节可能丢失——AI 就"忘了"你们之前聊的内容。
 
-### The Solution
+### 解决方案
 
-Enable `memoryFlush`: before compression triggers, the AI automatically saves critical information to files.
+开启 `memoryFlush`：在压缩触发之前，AI 自动把关键信息保存到文件。
 
-Add to `~/.openclaw/openclaw.json`:
+在 `~/.openclaw/openclaw.json` 里加上：
 
 ```json
 {
@@ -32,78 +32,61 @@ Add to `~/.openclaw/openclaw.json`:
 }
 ```
 
-| Parameter | Meaning | Recommended |
-|-----------|---------|-------------|
-| `reserveTokensFloor` | Minimum tokens to keep after compaction | 20000 |
-| `memoryFlush.enabled` | Auto-save before compression | `true` |
-| `softThresholdTokens` | Start flushing this many tokens before limit | 4000 |
+| 参数 | 含义 | 建议值 |
+|------|------|--------|
+| `reserveTokensFloor` | 压缩后最少保留多少 token | 20000 |
+| `memoryFlush.enabled` | 压缩前自动保存 | `true` |
+| `softThresholdTokens` | 在到达限制前多少 token 开始刷新 | 4000 |
 
-### Manual Compaction
+### 手动压缩
 
-When in a long conversation, manually trigger with preservation hints:
-
-```
-/compact Keep all technical decisions and code snippets
-```
-
-### Other Memory Commands
+在长对话中，可以手动触发，同时指定保留什么：
 
 ```
-/new          # Start a fresh session
-/status       # Check current token usage
+/compact 保留所有技术决策和代码片段
 ```
 
 ---
 
-## 2. Block Streaming — Fix Slow Long Responses
+## 2. 渐进式输出：blockStreaming
 
-By default, OpenClaw waits until the full response is generated before sending. Enable block streaming to send in chunks:
+默认情况下，OpenClaw 会等 AI 生成完整回复后一次性发送。开启 blockStreaming 后，按段落逐步推送，体验好很多：
 
 ```json
 {
   "agents": {
     "defaults": {
-      "blockStreamingDefault": "on",
-      "blockStreamingBreak": "text_end",
-      "blockStreamingChunk": {
-        "minChars": 200,
-        "maxChars": 1500
-      }
+      "blockStreamingDefault": "on"
     }
   }
 }
 ```
 
-Now long responses appear progressively in your chat instead of one giant message.
-
 ---
 
-## 3. Heartbeat Optimization — Prevent Late-Night Disturbances
+## 3. 静默时段：activeHours
 
-Set active hours so the AI doesn't message you at 3 AM:
+不想半夜被 AI 吵醒：
 
 ```json
 {
   "agents": {
     "defaults": {
       "heartbeat": {
-        "every": "30m",
-        "target": "last",
-        "activeHours": {
-          "start": "08:00",
-          "end": "23:00"
-        }
+        "activeHours": "08:00 - 23:00"
       }
     }
   }
 }
 ```
 
+Cron 任务和定时消息只在这个时间段内触发。
+
 ---
 
-## 4. Acknowledge Reactions — Instant "Message Received" Feedback
+## 4. 消息确认反馈：ackReaction
 
-When you send a message, the AI can immediately react with an emoji so you know it's processing:
+发消息后，AI 立刻回一个 emoji 表示"收到了，正在处理"：
 
 ```json
 {
@@ -116,134 +99,118 @@ When you send a message, the AI can immediately react with an emoji so you know 
 
 ---
 
-## 5. Model Tiering Strategy — Save 60-70% on Tokens
+## 5. 模型分级策略——省 60-70% 费用
 
-Don't use the most expensive model for everything. In your AGENTS.md, define a tiering strategy:
-
-```markdown
-## Model Usage Strategy
-
-- **Simple tasks** (search, summarize, format): Use `qwen3.5-flash` or `MiniMax-M2.5`
-- **Standard tasks** (writing, analysis, chat): Use `qwen3.5-plus`
-- **Complex tasks** (architecture, debugging, reasoning): Use `qwen3-max` or `kimi-k2.5`
-- **Code tasks**: Use `qwen3-coder-next`
-```
-
-In TUI, switch on-the-fly:
-```
-/model qwen3.5-flash     # Quick cheap query
-/model qwen3-max          # Need heavy reasoning now
-```
-
----
-
-## 6. Sub-Agent Parallel Tasks
-
-OpenClaw can spawn sub-agents to handle tasks in parallel. Instead of the main agent doing everything sequentially, it delegates:
-
-### How It Works
-
-1. You tell the main agent: "Research these 3 topics and summarize"
-2. Main agent spawns 3 sub-agents, each researching one topic
-3. Sub-agents report back, main agent synthesizes
-
-### Enable in AGENTS.md
+不是所有任务都需要最贵的模型。在 AGENTS.md 里定义分级策略：
 
 ```markdown
-## Sub-Agents
+## 模型使用策略
 
-When a task has 3+ independent subtasks, spawn sub-agents:
-- Each sub-agent gets a focused task description
-- Sub-agents work in parallel
-- Main agent collects and synthesizes results
-- Sub-agents use lighter models (qwen3.5-flash) unless task requires heavy reasoning
+- **简单任务**（搜索、总结、格式化）：用 `qwen3.5-flash` 或 `MiniMax-M2.5`
+- **一般任务**（写作、分析、聊天）：用 `qwen3.5-plus`
+- **复杂任务**（架构设计、调试、推理）：用 `qwen3-max` 或 `kimi-k2.5`
+- **写代码**：用 `qwen3-coder-next`
 ```
 
-### How Sub-Agents Work in Practice
-
+在 TUI 里随时切换：
 ```
-You: "Compare React, Vue, and Svelte for our new project"
-
-Main Agent thinking:
-  -> Spawn sub-agent 1: "Research React pros/cons for enterprise"
-  -> Spawn sub-agent 2: "Research Vue pros/cons for enterprise"
-  -> Spawn sub-agent 3: "Research Svelte pros/cons for enterprise"
-  -> Wait for all 3 to complete
-  -> Synthesize into comparison table
+/model qwen3.5-flash     # 快速简单查询
+/model qwen3-max          # 需要深度推理
 ```
 
 ---
 
-## 7. Memory Maintenance — Prevent Memory Rot
+## 6. 子 Agent 并行处理
 
-Over time, memories accumulate and become stale. Add automatic maintenance to HEARTBEAT.md:
+OpenClaw 可以派出子 Agent 并行处理任务，而不是主 Agent 一件件做：
+
+### 工作方式
+
+1. 你告诉主 Agent："帮我调研这 3 个方向，然后汇总"
+2. 主 Agent 派出 3 个子 Agent，各研究一个方向
+3. 子 Agent 汇报结果，主 Agent 综合分析
+
+### 在 AGENTS.md 中启用
 
 ```markdown
-## Memory Maintenance (Weekly)
-- Every Sunday at 03:00:
-  1. Deduplicate entries in MEMORY.md
-  2. Archive daily logs older than 30 days to memory/archive/
-  3. Verify memory/projects.md matches actual project status
-  4. Remove completed/abandoned projects from active list
+## 子 Agent
+
+当任务有 3 个以上独立子任务时，派出子 Agent：
+- 每个子 Agent 获得一个聚焦的任务描述
+- 子 Agent 并行工作
+- 主 Agent 收集并综合结果
+- 子 Agent 优先使用轻量模型（qwen3.5-flash），除非任务需要强推理能力
 ```
 
 ---
 
-## 8. Multi-Channel Format Adaptation
+## 7. 记忆维护——防止记忆腐化
 
-Different platforms support different Markdown features:
-
-| Format | Discord | Telegram | WhatsApp | DingTalk |
-|--------|---------|----------|----------|----------|
-| Tables | Yes | No | No | No |
-| Code blocks | Yes | Yes | No | Yes |
-| Bold/Italic | Yes | Yes | Yes | Yes |
-| Emoji reactions | Yes | Yes | Yes | Yes |
-
-Add to AGENTS.md for auto-adaptation:
+时间久了，记忆会越积越多，旧的信息可能已经过时。在 HEARTBEAT.md 里加上自动维护：
 
 ```markdown
-## Platform Formatting
-- **Discord/Telegram**: Use markdown, wrap code in triple backticks
-- **WhatsApp/DingTalk**: No tables — use bullet lists instead
-- **Discord**: Wrap multiple links in <> to prevent preview spam
+## 记忆维护（每周）
+- 每周日 03:00：
+  1. MEMORY.md 去重
+  2. 归档 30 天前的日志到 memory/archive/
+  3. 检查 memory/projects.md 是否与实际项目状态一致
+  4. 清理已完成或已放弃的项目
 ```
 
 ---
 
-## 9. Full openclaw.json Configuration Cheatsheet
+## 8. 多渠道格式适配
 
-| Config Path | Purpose | Recommended |
-|-------------|---------|-------------|
-| `models.providers.bailian.baseUrl` | API endpoint | See Coding Plan chapter |
-| `agents.defaults.model.primary` | Default model | `bailian/qwen3.5-plus` |
-| `agents.defaults.blockStreamingDefault` | Progressive responses | `"on"` |
-| `agents.defaults.compaction.memoryFlush.enabled` | Save before compress | `true` |
-| `agents.defaults.heartbeat.activeHours` | Quiet hours | `08:00 - 23:00` |
-| `tools.exec.enabled` | Allow shell commands | `true` |
-| `tools.web.search.enabled` | Allow web search | `true` |
-| `tools.web.search.apiKey` | Brave Search API key | Free at brave.com |
-| `tools.media.image.enabled` | Image recognition | `true` (needs vision model) |
-| `agents.defaults.workspace` | Workspace path | `~/.openclaw/workspace` |
-| `channels.discord.maxLinesPerMessage` | Max lines per message | 17 |
+不同平台对 Markdown 的支持不一样：
 
----
+| 格式 | Discord | Telegram | WhatsApp | 钉钉 |
+|------|---------|----------|----------|------|
+| 表格 | 支持 | 不支持 | 不支持 | 不支持 |
+| 代码块 | 支持 | 支持 | 不支持 | 支持 |
+| 加粗/斜体 | 支持 | 支持 | 支持 | 支持 |
 
-## 10. Priority Checklist (1 Hour to Transform Your Setup)
+在 AGENTS.md 里加上自动适配规则：
 
-| Priority | Task | Time |
-|----------|------|------|
-| 1 | **AGENTS.md**: Session startup + memory rules + safety boundaries | 30 min |
-| 2 | **memoryFlush**: Enable auto-save before compression | 5 min |
-| 3 | **ackReaction**: Message received confirmation | 1 min |
-| 4 | **blockStreaming**: Progressive response delivery | 5 min |
-| 5 | **Heartbeat activeHours**: No late-night messages | 5 min |
-| 6 | **Model tiering**: Use cheap models for simple tasks | 15 min |
-| 7 | **Cron tasks**: Daily brief / weekly report | 15 min |
-| 8 | **Memory maintenance**: Weekly auto-cleanup | 10 min |
-| 9 | **Custom Skill**: Write your first SKILL.md | 30 min |
-| 10 | **Multi-channel**: Add Discord or Telegram | 30 min |
+```markdown
+## 平台格式适配
+- **Discord / Telegram**：正常用 Markdown，代码用三个反引号
+- **WhatsApp / 钉钉**：不用表格，改成列表
+- **Discord**：多个链接用 <> 包起来，避免预览刷屏
+```
 
 ---
 
-*Previous: [Cron Jobs →](02-cron-jobs.md) | Next: [MCP Integration →](05-mcp-integration.md)*
+## 9. openclaw.json 完整配置速查
+
+| 配置路径 | 作用 | 推荐值 |
+|---------|------|--------|
+| `models.providers.bailian.baseUrl` | API 端点 | 见 Coding Plan 章节 |
+| `agents.defaults.model.primary` | 默认模型 | `bailian/qwen3.5-plus` |
+| `agents.defaults.blockStreamingDefault` | 渐进式输出 | `"on"` |
+| `agents.defaults.compaction.memoryFlush.enabled` | 压缩前自动保存 | `true` |
+| `agents.defaults.heartbeat.activeHours` | 静默时段 | `08:00 - 23:00` |
+| `tools.exec.enabled` | 允许执行命令 | `true` |
+| `tools.web.search.enabled` | 允许网页搜索 | `true` |
+| `tools.web.search.apiKey` | Brave 搜索 API Key | 在 brave.com 免费申请 |
+| `tools.media.image.enabled` | 图片识别 | `true`（需视觉模型） |
+
+---
+
+## 10. 优先级清单（1 小时改造你的配置）
+
+| 优先级 | 任务 | 耗时 |
+|-------|------|------|
+| 1 | **AGENTS.md**：会话启动 + 记忆规则 + 安全边界 | 30 分钟 |
+| 2 | **memoryFlush**：开启压缩前自动保存 | 5 分钟 |
+| 3 | **ackReaction**：消息收到确认 | 1 分钟 |
+| 4 | **blockStreaming**：渐进式输出 | 5 分钟 |
+| 5 | **activeHours**：静默时段 | 5 分钟 |
+| 6 | **模型分级**：简单任务用便宜模型 | 15 分钟 |
+| 7 | **Cron 任务**：日报 / 周报 | 15 分钟 |
+| 8 | **记忆维护**：每周自动清理 | 10 分钟 |
+| 9 | **自定义 Skill**：写第一个 SKILL.md | 30 分钟 |
+| 10 | **多渠道**：接入 Discord 或 Telegram | 30 分钟 |
+
+---
+
+*上一节：[定时任务](02-cron-jobs.md) | 下一节：[MCP 协议集成 →](05-mcp-integration.md)*

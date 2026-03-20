@@ -1,81 +1,37 @@
-# Chapter 6.1: Memory System
+# 第6章·第1节：记忆系统
 
-> OpenClaw's persistent memory lets your AI assistant get smarter over time.
-
----
-
-## Overview
-
-OpenClaw uses a **file-based memory system** that persists across sessions. Every new session, the AI starts fresh — but by reading memory files, it recovers context.
-
-```
-Session starts -> AI reads workspace files:
-  1. SOUL.md (identity)
-  2. USER.md (user info)
-  3. AGENTS.md (behavior rules)
-  4. memory/YYYY-MM-DD.md (recent daily logs)
-  5. MEMORY.md (core facts index)
-```
+> OpenClaw 不是金鱼——它能记住你说过的话，而且越用越聪明。
 
 ---
 
-## Memory Architecture: 4 Layers
+## 记忆文件结构
 
-| Layer | File | Persistence | Content |
-|-------|------|------------|---------|
-| Index | `MEMORY.md` | Long-term | Core facts, preferences, memory index (< 40 lines) |
-| Projects | `memory/projects.md` | Medium-term | Active project status and TODOs |
-| Lessons | `memory/lessons.md` | Long-term | Mistakes and solutions by severity |
-| Daily | `memory/YYYY-MM-DD.md` | Short-term | Daily raw logs with conclusions |
-
----
-
-## Setting Up Memory
-
-### 1. Create Memory Directory
-
-```bash
-cd ~/.openclaw/workspace
-mkdir -p memory
 ```
-
-### 2. Initialize MEMORY.md
-
-```markdown
-# Memory
-
-## Key Facts
-- User prefers Python
-- Timezone: Asia/Shanghai
-- Primary editor: VSCode
-
-## Active Projects
-- See memory/projects.md
-
-## Memory Index
-- Daily logs: memory/YYYY-MM-DD.md
-- Project status: memory/projects.md
-- Lessons learned: memory/lessons.md
-```
-
-### 3. Configure AGENTS.md Memory Rules
-
-Add to your `AGENTS.md` (see [Chapter 2.4](../02-core-concepts/04-workspace-files.md)):
-
-```markdown
-## Memory Rules
-- Write daily logs to `memory/YYYY-MM-DD.md`
-- Record conclusions, not process
-- Use #tags for memorySearch retrieval
-- Update MEMORY.md only when index changes
-- Keep MEMORY.md < 40 lines
+~/.openclaw/workspace/
++-- MEMORY.md              # 记忆索引（控制在 40 行内）
++-- memory/
+    +-- projects.md        # 当前项目状态
+    +-- lessons.md         # 踩坑记录
+    +-- YYYY-MM-DD.md      # 每日原始日志
+    +-- archive/           # 归档目录
 ```
 
 ---
 
-## Preventing Memory Loss: memoryFlush
+## 记忆层级
 
-When conversations get long, OpenClaw compresses old messages. Enable memoryFlush to auto-save before compression:
+| 层级 | 持久性 | 内容 |
+|------|-------|------|
+| 用户偏好 | 长期 | 姓名、习惯、沟通风格 |
+| 决策历史 | 中期 | 过去的选择、项目决策 |
+| 技术知识 | 中短期 | 学到的概念、代码模式 |
+| 对话历史 | 短期 | 最近的交互记录 |
+
+---
+
+## 防丢失：memoryFlush
+
+对话太长时，OpenClaw 会压缩旧消息来节省上下文窗口。启用 memoryFlush，让 AI 在压缩之前自动把重要信息存到文件里：
 
 ```json
 {
@@ -93,15 +49,15 @@ When conversations get long, OpenClaw compresses old messages. Enable memoryFlus
 }
 ```
 
-See [Advanced Tips](03-advanced-tips.md) for detailed explanation.
+详见 [进阶技巧](03-advanced-tips.md) 章节。
 
 ---
 
-## memorySearch: Semantic Search over Memory
+## memorySearch：语义搜索记忆
 
-OpenClaw supports semantic search over your memory files. To enable, you need an embedding API.
+OpenClaw 支持对记忆文件做语义搜索。需要一个 Embedding API。
 
-### Free Option: SiliconFlow bge-m3
+### 免费方案：SiliconFlow bge-m3
 
 ```json
 {
@@ -111,7 +67,7 @@ OpenClaw supports semantic search over your memory files. To enable, you need an
       "embedding": {
         "provider": "openai-compatible",
         "baseUrl": "https://api.siliconflow.cn/v1",
-        "apiKey": "YOUR_SILICONFLOW_KEY",
+        "apiKey": "你的SiliconFlow-Key",
         "model": "BAAI/bge-m3"
       }
     }
@@ -119,106 +75,88 @@ OpenClaw supports semantic search over your memory files. To enable, you need an
 }
 ```
 
-Get a free API key at [SiliconFlow](https://siliconflow.cn/).
+在 [SiliconFlow](https://siliconflow.cn/) 注册就能免费拿到 API Key。
 
-### How It Works
+### 工作原理
 
-1. Memory files are chunked and embedded into vectors
-2. When you ask "what did we discuss about deployment?", OpenClaw searches semantically
-3. Relevant memories are injected into context
+1. 记忆文件被切块后转成向量
+2. 你问"我们之前讨论部署的事是怎么定的？"，OpenClaw 会做语义搜索
+3. 找到的相关记忆会被注入当前上下文
 
 ---
 
-## Automated Knowledge Sync (Advanced)
+## 自动知识同步（进阶）
 
-For power users who want to combine memories from multiple AI tools (e.g., Claude Code + OpenClaw):
-
-### Cron-based Sync
+如果你同时用 Claude Code 和 OpenClaw，可以设置定时任务把两边的记忆合并：
 
 ```bash
-# Hourly knowledge sync
+# 每小时同步一次
 openclaw cron add \
   --name "Knowledge Sync" \
   --cron "0 * * * *" \
   --tz "Asia/Shanghai" \
   --session isolated \
-  --message "Read all memory files, deduplicate, update MEMORY.md index"
+  --message "读取所有记忆文件，去重，更新 MEMORY.md 索引"
 
-# Daily summary (23:00)
+# 每晚 23:00 生成当日总结
 openclaw cron add \
   --name "Daily Summary" \
   --cron "0 23 * * *" \
   --tz "Asia/Shanghai" \
   --delivery announce \
-  --message "Summarize today's work from memory/$(date +%Y-%m-%d).md"
-```
-
-### Multi-Source Memory Pipeline
-
-```
-Claude Code sessions    OpenClaw TUI sessions
-  |                        |
-  +-- ~/.claude/           +-- ~/.openclaw/sessions/
-  |                        |
-  +---------+--------------+
-            |
-    Knowledge Agent (hourly cron)
-            |
-    Deduplicate + Extract insights
-            |
-    Update memory/ directory
+  --message "根据 memory/$(date +%Y-%m-%d).md 总结今天的工作"
 ```
 
 ---
 
-## Memory Maintenance
+## 记忆维护
 
-Add to HEARTBEAT.md for automatic cleanup:
+在 HEARTBEAT.md 里加上自动清理：
 
 ```markdown
-## Memory Maintenance
-- Every Sunday at 03:00:
-  1. Deduplicate MEMORY.md entries
-  2. Archive daily logs older than 30 days
-  3. Verify projects.md matches current status
+## 记忆维护
+- 每周日 03:00：
+  1. MEMORY.md 去重
+  2. 归档 30 天前的日志
+  3. 检查 projects.md 是否与实际一致
 ```
 
 ---
 
-## Daily Log Format
+## 日志格式规范
 
 ```markdown
-### [PROJECT:MyApp] Deployment Complete
-- **Conclusion**: Deployed with nginx on port 80
-- **Files**: /etc/nginx/sites-available/myapp
-- **Lesson**: Must use reverse proxy, direct port exposure fails
-- **Tags**: #myapp #deploy #nginx
+### [PROJECT:MyApp] 部署完成
+- **结论**：通过 nginx 部署在 80 端口
+- **改动文件**：/etc/nginx/sites-available/myapp
+- **教训**：直接暴露端口不行，必须走反向代理
+- **标签**：#myapp #部署 #nginx
 ```
 
 ---
 
-## Monitoring
+## 健康检查
 
 ```bash
-# Check memory health
-wc -l ~/.openclaw/workspace/MEMORY.md      # Should be < 40 lines
-ls -lt ~/.openclaw/workspace/memory/*.md    # Recent logs
+# 查看记忆文件大小
+wc -l ~/.openclaw/workspace/MEMORY.md      # 应该 < 40 行
+ls -lt ~/.openclaw/workspace/memory/*.md    # 看最近的日志
 
-# Count session files
+# 统计会话文件数
 ls ~/.openclaw/agents/main/sessions/*.jsonl | wc -l
 ```
 
 ---
 
-## Best Practices
+## 使用建议
 
-1. **Keep MEMORY.md lean**: < 40 lines, index only
-2. **Enable memoryFlush**: Prevents losing context during long chats
-3. **Record conclusions, not process**: "Deployed with nginx on port 80" not "Tried running directly, got errors..."
-4. **Use #tags**: Makes memorySearch much more effective
-5. **Weekly maintenance**: Clean up stale entries
-6. **Backup regularly**: `cp -r ~/.openclaw/ ~/.openclaw-backup-$(date +%Y%m%d)`
+1. **MEMORY.md 保持精简**：不超过 40 行，只放索引
+2. **开启 memoryFlush**：防止长对话丢失上下文
+3. **记结论，不记过程**："用 nginx 部署在 80 端口"比"调了半天 bug"强
+4. **善用 #标签**：让 memorySearch 更容易命中
+5. **每周维护**：清理过期条目
+6. **定期备份**：`cp -r ~/.openclaw/ ~/.openclaw-backup-$(date +%Y%m%d)`
 
 ---
 
-*Next: [Cron Jobs →](02-cron-jobs.md)*
+*下一节：[定时任务 →](02-cron-jobs.md)*

@@ -1,14 +1,18 @@
-# Chapter 3.1: openclaw.json Configuration
+# 第3章·第1节：openclaw.json 配置
 
-## Config Location
+> OpenClaw 的所有配置都在这一个 JSON 文件里。
+
+---
+
+## 配置文件位置
 
 ```
 ~/.openclaw/openclaw.json
 ```
 
-## Using Alibaba Cloud DashScope (Recommended)
+## 使用阿里云 DashScope（推荐）
 
-DashScope provides Qwen models and third-party models (DeepSeek, Kimi, GLM, MiniMax) via an OpenAI-compatible API.
+DashScope 提供通义千问系列模型，也接入了第三方模型（DeepSeek、Kimi、GLM、MiniMax），统一走 OpenAI 兼容 API。
 
 ```json
 {
@@ -16,23 +20,23 @@ DashScope provides Qwen models and third-party models (DeepSeek, Kimi, GLM, Mini
     "providers": {
       "dashscope": {
         "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        "apiKey": "YOUR_DASHSCOPE_API_KEY",
+        "apiKey": "你的DashScope-API-Key",
         "api": "openai-chat",
         "models": [
           {
             "id": "qwen3-max",
             "name": "Qwen3 Max",
-            "description": "Strongest, best for complex tasks (262K context)"
+            "description": "最强，适合复杂任务（262K 上下文）"
           },
           {
             "id": "qwen3.5-plus",
             "name": "Qwen3.5 Plus",
-            "description": "Balanced quality, speed, cost (1M context)"
+            "description": "均衡，兼顾质量、速度和成本（1M 上下文）"
           },
           {
             "id": "qwen3.5-flash",
             "name": "Qwen3.5 Flash",
-            "description": "Fastest, cheapest, simple tasks (1M context)"
+            "description": "最快最便宜，适合简单任务（1M 上下文）"
           }
         ]
       }
@@ -48,103 +52,78 @@ DashScope provides Qwen models and third-party models (DeepSeek, Kimi, GLM, Mini
 }
 ```
 
-### Get API Key
+### 获取 API Key
 
-1. Visit https://dashscope.console.aliyun.com/
-2. Sign up / log in
-3. Create an API Key and copy it
+1. 打开 https://dashscope.console.aliyun.com/
+2. 注册或登录
+3. 在「API Key 管理」页面创建新的 Key
 
-## DashScope Model Catalog
+---
 
-### Flagship Models
-
-| Model ID | Best For | Context | Input Price | Output Price |
-|----------|----------|---------|------------|-------------|
-| `qwen3-max` | Complex reasoning | 262K | 2.5 CNY/M | 10 CNY/M |
-| `qwen3.5-plus` | Balanced (recommended) | 1M | 0.8 CNY/M | 4.8 CNY/M |
-| `qwen3.5-flash` | Speed & cost | 1M | 0.2 CNY/M | 2 CNY/M |
-
-### Third-Party Models on DashScope
-
-| Provider | Models |
-|----------|--------|
-| DeepSeek | deepseek-chat, deepseek-reasoner |
-| Kimi | kimi-k2.5 |
-| GLM | glm-5 |
-| MiniMax | MiniMax-M2.5 |
-
-### Specialized Models
-
-| Model | Use Case |
-|-------|----------|
-| `qwen3.5-coder` | Code generation and understanding |
-| `qwen3.5-plus` (multimodal) | Image + video understanding |
-| `qwen-audio` | Speech understanding |
-
-## Using Anthropic API
-
-If you have an Anthropic API key:
+## 使用 Anthropic
 
 ```json
 {
   "models": {
     "providers": {
       "anthropic": {
-        "apiKey": "YOUR_ANTHROPIC_API_KEY",
-        "api": "anthropic-messages",
-        "models": [
-          { "id": "claude-sonnet-4-5-20260514", "name": "Claude Sonnet 4.5" },
-          { "id": "claude-opus-4-6-20260620", "name": "Claude Opus 4.6" }
-        ]
+        "apiKey": "你的Anthropic-API-Key"
       }
     }
   },
   "agents": {
     "defaults": {
-      "model": { "primary": "anthropic/claude-sonnet-4-5-20260514" }
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-5-20260514"
+      }
     }
   }
 }
 ```
 
-## Switch Models
+---
 
-### In openclaw.json
+## 多模型同时配置
+
+可以同时配好几个模型供应商，在 TUI 里用 `/model` 随时切换：
 
 ```json
-{ "agents": { "defaults": { "model": { "primary": "dashscope/qwen3-max" } } } }
-```
-
-### At Runtime (TUI)
-
-```bash
-/model qwen3-max
-/model qwen3.5-flash
-```
-
-## Environment Variables
-
-```bash
-# DashScope (recommended)
-export OPENAI_API_KEY="your-dashscope-api-key"
-export OPENAI_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
-
-# OR Anthropic
-export ANTHROPIC_API_KEY="your-anthropic-api-key"
-```
-
-## Verify
-
-```bash
-openclaw models list
-```
-
-## Security
-
-```bash
-chmod 600 ~/.openclaw/openclaw.json
+{
+  "models": {
+    "providers": {
+      "dashscope": {
+        "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "你的DashScope-Key",
+        "api": "openai-chat",
+        "models": [
+          { "id": "qwen3-max", "name": "Qwen3 Max" },
+          { "id": "qwen3.5-plus", "name": "Qwen3.5 Plus" },
+          { "id": "qwen3.5-flash", "name": "Qwen3.5 Flash" }
+        ]
+      },
+      "anthropic": {
+        "apiKey": "你的Anthropic-Key"
+      }
+    }
+  }
+}
 ```
 
 ---
 
-*Next: [Model Providers →](02-model-providers.md)*
+## 完整配置项速查
+
+| 配置路径 | 作用 | 推荐值 |
+|---------|------|--------|
+| `models.providers.*.baseUrl` | API 端点 | 按供应商填 |
+| `agents.defaults.model.primary` | 默认模型 | `dashscope/qwen3.5-plus` |
+| `agents.defaults.blockStreamingDefault` | 渐进式输出 | `"on"` |
+| `agents.defaults.compaction.memoryFlush.enabled` | 压缩前自动保存记忆 | `true` |
+| `tools.exec.enabled` | 允许执行命令 | `true` |
+| `tools.web.search.enabled` | 允许网页搜索 | `true` |
+| `tools.media.image.enabled` | 图片识别 | `true`（需要视觉模型） |
+| `gateway.mode` | 网关模式 | `"local"` |
+
+---
+
+*下一节：[模型提供商配置 →](02-model-providers.md)*

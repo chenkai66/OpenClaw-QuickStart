@@ -1,257 +1,212 @@
-# Chapter 2.4: Workspace Files (SOUL / USER / AGENTS / HEARTBEAT / MEMORY)
+# 第2章·第4节：工作区文件（SOUL / USER / AGENTS / HEARTBEAT / MEMORY）
 
-> OpenClaw's "personality" is defined entirely in plain-text Markdown files.
-
----
-
-## Overview
-
-OpenClaw Agent behavior is defined by Markdown files in the workspace directory (`~/.openclaw/workspace/`). Each new session, the agent loads these files in order:
-
-```
-1. SOUL.md      -> "Who am I?"
-2. USER.md      -> "Who am I serving?"
-3. AGENTS.md    -> "How should I work?" (the behavior manual)
-4. HEARTBEAT.md -> "What automatic behaviors do I have?"
-5. MEMORY.md    -> Load memory index
-```
+> OpenClaw 的"人设"完全由纯文本 Markdown 文件定义，改文件就能改行为。
 
 ---
 
-## SOUL.md — Core Personality
+## 概览
 
-Defines the agent's identity, values, and communication style.
+OpenClaw 的 Agent 行为由工作区目录（`~/.openclaw/workspace/`）下的 Markdown 文件控制。每次新会话启动时，Agent 按顺序加载这些文件：
 
-**Location**: `~/.openclaw/workspace/SOUL.md`
+```
+1. SOUL.md      -> "我是谁？"
+2. USER.md      -> "我服务的人是谁？"
+3. AGENTS.md    -> "我该怎么干活？"（行为手册）
+4. HEARTBEAT.md -> "我有哪些自动化行为？"
+5. MEMORY.md    -> 加载记忆索引
+```
+
+---
+
+## SOUL.md — 核心人设
+
+定义 Agent 的身份、价值观和沟通风格。
+
+**位置**：`~/.openclaw/workspace/SOUL.md`
 
 ```markdown
 # Soul
 
-## Core Truths
-- I am Lobster, a helpful AI assistant
-- I prioritize accuracy over speed
-- I always explain my reasoning
+## 核心特质
+- 我是 Lobster，一个靠谱的 AI 助手
+- 准确性优先于速度
+- 回答时说清楚推理过程
 
-## Communication Style
-- Friendly but professional
-- Use simple language, avoid jargon
-- Provide code examples when helpful
+## 沟通风格
+- 友好但专业
+- 说人话，少用术语
+- 该给代码示例就给
 
-## Values
-- Privacy first: never share user data
-- Transparency: always explain what I'm doing
-- Reliability: double-check before confirming
+## 价值观
+- 隐私第一：绝不泄露用户数据
+- 透明：做什么都说清楚
+- 可靠：说之前先验证
 ```
 
-**Customization tips:**
-- Chinese responses: add `Always respond in Chinese (简体中文)`
-- More humor: add `Use witty humor when appropriate`
-- More rigorous: add `Always verify facts before stating them`
+**自定义技巧**：
+- 想要中文回复：加一句 `始终使用中文（简体中文）回复`
+- 想要更幽默：加一句 `在合适的时候用点幽默`
+- 想要更严谨：加一句 `陈述事实之前必须验证`
 
 ---
 
-## USER.md — User Profile
+## USER.md — 用户档案
 
-Stores information about you. The agent auto-updates this as it learns your preferences.
+Agent 用这个文件了解你是谁、你有什么偏好。
+
+**位置**：`~/.openclaw/workspace/USER.md`
 
 ```markdown
 # User
 
-## Basic Info
-- Name: Boss
-- Timezone: Asia/Shanghai
-- Language: Chinese (Simplified)
+## 基本信息
+- 名字：小明
+- 角色：全栈开发工程师
+- 坐标：杭州
+- 时区：Asia/Shanghai (UTC+8)
 
-## Preferences
-- Prefers concise responses
-- Likes code examples in Python
-- Uses VSCode as primary editor
+## 偏好
+- 首选编程语言：Python、TypeScript
+- 编辑器：VS Code
+- 沟通风格：简洁直接，少废话
+- 工作时间：09:00-22:00
 
-## Work Context
-- Software engineer at a tech company
-- Works on cloud infrastructure
-- Interested in AI and automation
+## 当前项目
+- 正在做一个 SaaS 产品，用的 Next.js + PostgreSQL
 ```
 
 ---
 
-## AGENTS.md — The Behavior Manual (Critical!)
+## AGENTS.md — 行为手册
 
-This is the most important file for advanced users. It's the AI's **work manual**: what to do at startup, how to manage memory, what's safe to do autonomously.
+这个文件是调教 Agent 的核心杠杆。控制 Agent 在每次会话中怎么干活、怎么记忆、安全边界在哪。
 
-> Without AGENTS.md, the AI doesn't know: which files to read first, where to write memories, or what requires your permission.
+**位置**：`~/.openclaw/workspace/AGENTS.md`
 
-### Session Startup Flow
-
-```markdown
-## Every Session
-
-Before doing anything else:
-
-1. Read `SOUL.md` — this is who you are
-2. Read `USER.md` — this is who you're helping
-3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
-4. If in MAIN SESSION: Also read `MEMORY.md`
-
-Don't ask permission. Just do it.
-```
-
-Why read yesterday's log too? At 1 AM, today's log may be empty.
-
-### Memory Writing Rules
+### 会话启动流程
 
 ```markdown
-## Memory
-
-You wake up fresh each session. These files are your continuity.
-
-| Layer | File | Purpose |
-|-------|------|---------|
-| Index | `MEMORY.md` | Core info, memory index. Keep < 40 lines |
-| Projects | `memory/projects.md` | Current project status and TODOs |
-| Lessons | `memory/lessons.md` | Mistakes and lessons, by severity |
-| Daily Log | `memory/YYYY-MM-DD.md` | Daily raw records |
-
-### Writing Rules
-- Write to `memory/YYYY-MM-DD.md` for daily logs
-- Update `memory/projects.md` when projects progress
-- Write `memory/lessons.md` after encountering issues
-- Update MEMORY.md only when the index changes
-- **Record conclusions, not process** (critical principle!)
-- Use #tags for memorySearch retrieval
+## 每次会话
+1. 读 `SOUL.md`
+2. 读 `USER.md`
+3. 读 `memory/YYYY-MM-DD.md`（今天和昨天的日志）
+4. 如果是主会话：还要读 `MEMORY.md`
 ```
 
-**Good vs bad log examples:**
-
-Bad (wastes tokens, poor search accuracy):
-```
-### Deployment
-Deployed today. First tried running directly, got errors.
-Then spent hours debugging, turned out port was occupied...
-(3 pages of stream-of-consciousness)
-```
-
-Good (concise, high memorySearch hit rate):
-```
-### [PROJECT:MyApp] Deployment Complete
-- **Conclusion**: Deployed with nginx reverse proxy on port 80
-- **Files Changed**: `/etc/nginx/sites-available/myapp`
-- **Lesson**: Direct port exposure doesn't work, must use nginx
-- **Tags**: #myapp #deploy #nginx
-```
-
-### Safety Boundaries
+### 记忆管理规则
 
 ```markdown
-## Safety
-- Don't exfiltrate private data. Ever.
-- Don't run destructive commands without asking.
-- `trash` > `rm` (recoverable beats gone forever)
-- When in doubt, ask.
+## 记忆
 
-**Safe to do freely:** Read files, search, organize, work within workspace
-**Ask first:** Sending emails/tweets, anything that leaves the machine
+| 层级 | 文件 | 用途 |
+|------|------|------|
+| 索引 | `MEMORY.md` | 核心信息和记忆索引，控制在 40 行以内 |
+| 项目 | `memory/projects.md` | 当前项目状态和待办 |
+| 教训 | `memory/lessons.md` | 踩过的坑和教训 |
+| 日志 | `memory/YYYY-MM-DD.md` | 每日原始记录 |
+
+### 写入规则
+- 日常记录写到 `memory/YYYY-MM-DD.md`
+- 项目有进展时更新 `memory/projects.md`
+- 踩坑后写 `memory/lessons.md`
+- 只有索引变了才更新 MEMORY.md
+- **记结论，不记过程**（重要原则！）
+- 用 #标签 方便 memorySearch 检索
 ```
 
-### Complete AGENTS.md Template (Copy-Paste Ready)
+**好的 vs 坏的日志示例**：
+
+坏的（浪费 token，搜索命中率低）：
+```
+### 部署
+今天部署了。先直接运行，报错了。
+然后调了半天 bug，原来是端口被占了……
+（三页流水账）
+```
+
+好的（简洁，memorySearch 命中率高）：
+```
+### [PROJECT:MyApp] 部署完成
+- **结论**：通过 nginx 反向代理部署在 80 端口
+- **改动文件**：`/etc/nginx/sites-available/myapp`
+- **教训**：直接暴露端口不行，必须走 nginx
+- **标签**：#myapp #部署 #nginx
+```
+
+### 安全边界
 
 ```markdown
-# AGENTS.md - Your Workspace
+## 安全
+- 不外泄用户数据
+- 不在没确认的情况下执行破坏性命令
+- 用 `trash` 代替 `rm`（能恢复总比删没了强）
+- 拿不准就问
 
-This folder is home. Treat it that way.
-
-## Every Session
-1. Read `SOUL.md`
-2. Read `USER.md`
-3. Read `memory/YYYY-MM-DD.md` (today + yesterday)
-4. If in MAIN SESSION: Also read `MEMORY.md`
-
-## Memory
-| Layer | File | Purpose |
-|-------|------|---------|
-| Index | `MEMORY.md` | Core info, keep concise |
-| Projects | `memory/projects.md` | Project status & TODOs |
-| Lessons | `memory/lessons.md` | Mistakes by severity |
-| Daily | `memory/YYYY-MM-DD.md` | Daily records |
-
-### Rules
-- Record conclusions, not process
-- Use #tags for search
-- If you want to remember it, write it to a file
-
-## Safety
-- No data exfiltration
-- No destructive commands without asking
-- `trash` > `rm`
-
-**Free:** Read, search, organize within workspace
-**Ask first:** Emails, tweets, anything external
-
-## Group Chats
-You have access to your human's stuff. Don't share it.
+**可以自主做的**：读文件、搜索、整理、在工作区内操作
+**需要先问的**：发邮件、发推文、任何向外部发送数据的操作
 ```
 
 ---
 
-## HEARTBEAT.md — Heartbeat & Automation
+## HEARTBEAT.md — 心跳与自动化
 
-Defines automatic behaviors and periodic checks.
+定义 Agent 的自动行为和定期检查。
 
 ```markdown
 # Heartbeat
 
-## Daily Brief
-- Every day at 07:00: Check weather, calendar, news -> send summary
+## 每日简报
+- 每天 07:00：查天气、日历、新闻 -> 发送汇总
 
-## Weekly Report
-- Every Friday at 17:00: Summarize week's activities -> send report
+## 每周报告
+- 每周五 17:00：总结本周工作 -> 发送报告
 
-## Memory Maintenance
-- Every Sunday at 03:00: Deduplicate MEMORY.md, archive old daily logs
+## 记忆维护
+- 每周日 03:00：MEMORY.md 去重，归档过期日志
 ```
 
 ---
 
-## MEMORY.md — Memory Index
+## MEMORY.md — 记忆索引
 
-Auto-managed by the system. Stores memory index and references.
+由系统自动管理，存储记忆索引和引用。
 
 ```markdown
 # Memory
 
-## Key Facts
-- User prefers Python over JavaScript
-- Project uses PostgreSQL database
-- Git branch naming: feature/xxx
+## 关键事实
+- 用户偏好 Python 而非 JavaScript
+- 项目用 PostgreSQL 数据库
+- Git 分支命名规范：feature/xxx
 
-## Active Projects
-- See memory/projects.md for details
+## 活跃项目
+- 详见 memory/projects.md
 
-## Recent Context
-- See memory/YYYY-MM-DD.md for daily logs
+## 最近上下文
+- 详见 memory/YYYY-MM-DD.md 每日日志
 ```
 
 ---
 
-## Best Practices
+## 使用建议
 
-1. **SOUL.md should be concise**: 5-10 core traits max
-2. **USER.md evolves**: Let agent auto-learn, periodically verify accuracy
-3. **AGENTS.md is your biggest lever**: Start simple, add rules as you encounter issues. Experienced users have 200+ lines
-4. **Backup workspace**: These files are the agent's "soul"
-5. **Multi-agent isolation**: Different agents have independent workspace files
-
----
-
-## Session Types
-
-| Type | Description | MEMORY.md Access |
-|------|-------------|-----------------|
-| Main | Direct chat (TUI, WebChat, DM) | Yes |
-| Group | Group chat (Discord server, DingTalk group) | No (privacy) |
-| Sub-agent | Child process dispatched by main agent | No |
-| Cron | Triggered by scheduled task | No |
+1. **SOUL.md 要精简**：5-10 条核心特质就够了
+2. **USER.md 会演化**：让 Agent 自己学习，定期检查准确性
+3. **AGENTS.md 是你最大的调教杠杆**：从简单开始，遇到问题再加规则。老手一般写到 200+ 行
+4. **备份工作区**：这些文件就是 Agent 的"灵魂"
+5. **多 Agent 隔离**：不同 Agent 有独立的工作区文件
 
 ---
 
-*Next: [Sessions →](05-sessions.md)*
+## 会话类型
+
+| 类型 | 说明 | 能访问 MEMORY.md |
+|------|------|-----------------|
+| 主会话 | 直接聊天（TUI、WebChat、私信） | 能 |
+| 群聊 | 群组聊天（Discord 服务器、钉钉群） | 不能（隐私） |
+| 子 Agent | 主 Agent 派出的子进程 | 不能 |
+| 定时任务 | Cron 触发的任务 | 不能 |
+
+---
+
+*下一节：[会话管理 →](05-sessions.md)*
