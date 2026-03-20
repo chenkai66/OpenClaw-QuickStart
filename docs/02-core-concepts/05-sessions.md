@@ -77,6 +77,32 @@ OpenClaw 支持同时运行多个会话：
 
 ---
 
+## 会话 ID 格式
+
+不同来源的消息有不同的会话 ID 格式：
+
+| 来源 | 会话 ID 格式 | 示例 |
+|------|-------------|------|
+| TUI 或 WebChat | `main` | `main` |
+| Telegram 私聊 | `dm:telegram:用户ID` | `dm:telegram:123456` |
+| Telegram 群聊 | `group:telegram:群ID` | `group:telegram:-100123` |
+| Telegram 话题 | `群ID:topic:话题ID` | `-100123:topic:99` |
+| Discord 私聊 | `dm:discord:用户ID` | `dm:discord:9876` |
+| Discord 频道 | `group:discord:频道ID` | `group:discord:C123` |
+| WhatsApp 私聊 | `dm:whatsapp:手机号` | `dm:whatsapp:+86138` |
+| 钉钉/企微/QQ | `dm:平台:用户ID` | `dm:dingtalk:user123` |
+
+---
+
+## 会话隔离原则
+
+- **main 会话**：最高权限，可以执行任何工具，读写 MEMORY.md
+- **dm 会话**：受限沙箱，权限取决于安全配置
+- **group 会话**：受限沙箱，不能访问 MEMORY.md（隐私保护）
+- **cron 会话**：独立会话，有独立的模型和上下文
+
+---
+
 ## 下一章
 
 👉 [第3章：配置详解](../03-configuration/01-openclaw-json.md) — openclaw.json 完全指南

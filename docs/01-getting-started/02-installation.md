@@ -45,8 +45,8 @@ brew install node@22
 ```bash
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
 source ~/.bashrc
-nvm install 22
-nvm use 22
+nvm install 24    # 推荐；或 nvm install 22 (最低 22.16)
+nvm use 24
 ```
 
 ## 第二步：安装 OpenClaw
@@ -151,7 +151,7 @@ systemctl daemon-reload && systemctl enable --now openclaw-gateway
 
 ## 检查清单
 
-- [ ] Node.js >= 22.16
+- [ ] Node.js 24（推荐）或 22.16+（兼容）
 - [ ] OpenClaw 已安装（`openclaw --version`）
 - [ ] 引导向导跑完了
 - [ ] API Key 配好了（DashScope / Coding Plan / Anthropic）

@@ -82,3 +82,76 @@
 /cron list     — 查看所有定时任务
 /cron delete   — 删除定时任务
 ```
+
+---
+
+## Heartbeat vs Cron
+
+很多人分不清这两个，一句话概括：
+
+> **Heartbeat = 巡逻员**（按节奏巡检，有事才提醒）
+> **Cron = 闹钟**（到点就执行，不管有没有事）
+
+| 对比 | Heartbeat | Cron |
+|------|-----------|------|
+| 触发方式 | 固定间隔（如每 30 分钟） | 精确时间（如每天 8:30） |
+| 执行条件 | 有事才行动，没事返回 `HEARTBEAT_OK` | 到点必执行 |
+| 适合场景 | 监控异常、检查遗漏 | 定时推送、周期性任务 |
+| 会话隔离 | 使用最近活跃的渠道 | 独立会话 |
+
+**最佳实践**：两者结合使用：
+- Heartbeat 30-60 分钟巡检一次，抓异常
+- Cron 每天 2-3 个关键节点，保底提醒
+
+---
+
+## Heartbeat 配置
+
+```json5
+{
+  agents: {
+    defaults: {
+      heartbeat: {
+        every: "30m",           // 每 30 分钟巡检一次
+        target: "last",         // 提醒发到最近聊天的渠道
+        prompt: "Read HEARTBEAT.md if it exists. Follow it strictly. If nothing needs attention, reply HEARTBEAT_OK.",
+        activeHours: {
+          start: "09:00",       // 只在白天工作
+          end: "22:00",
+          timezone: "Asia/Shanghai",
+        },
+      },
+    },
+  },
+}
+```
+
+---
+
+## Cron CLI 命令
+
+```bash
+# 添加定时任务（每天 8:30 推送日报）
+openclaw cron add \
+  --name "每日简报" \
+  --cron "30 8 * * *" \
+  --tz "Asia/Shanghai" \
+  --session main \
+  --system-event "请生成今日简报" \
+  --wake now
+
+# 添加一次性任务（20 分钟后提醒）
+openclaw cron add \
+  --name "开会提醒" \
+  --at "20m" \
+  --session main \
+  --system-event "20分钟到了，准备开会"
+
+# 查看所有任务
+openclaw cron list
+
+# 删除任务
+openclaw cron delete --name "每日简报"
+```
+
+> 💡 Cron 任务持久化到磁盘，Gateway 重启不会丢失。

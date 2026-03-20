@@ -128,6 +128,48 @@ openclaw pairing approve telegram <配对码>
 
 ---
 
+## 进阶配置（官方文档）
+
+```json5
+{
+  channels: {
+    telegram: {
+      enabled: true,
+      botToken: "your-token",
+      dmPolicy: "pairing",
+      // 流式输出（边生成边发送）
+      streaming: "partial",       // off | partial | block | progress
+      // 自定义命令
+      customCommands: [
+        { command: "backup", description: "Git 备份" },
+        { command: "generate", description: "生成图片" },
+      ],
+      // Webhook 模式（替代长轮询，适合生产环境）
+      webhookUrl: "https://example.com/telegram-webhook",
+      webhookSecret: "secret",
+      // 代理（国内访问 Telegram API）
+      proxy: "socks5://localhost:9050",
+      // 历史消息
+      historyLimit: 50,
+      // 媒体限制
+      mediaMaxMb: 100,
+      // 回复模式
+      replyToMode: "first",       // off | first | all
+      // 链接预览
+      linkPreview: true,
+      // 表情回复通知
+      reactionNotifications: "own", // off | own | all
+    },
+  },
+}
+```
+
+> **国内用户提示**：Telegram API 在国内需要代理。可以用 `proxy` 字段设置 SOCKS5 代理，或在服务器层面配置。
+
+> 来源：[官方配置参考](https://docs.openclaw.ai/gateway/configuration-reference)
+
+---
+
 ## 下一节
 
 👉 [03-Discord 接入](03-discord.md) — 连接 Discord

@@ -83,6 +83,43 @@ Gateway 根据以下维度路由消息：
 
 ---
 
+## 配置热重载
+
+Gateway 会监听 `~/.openclaw/openclaw.json` 文件变化，大多数配置修改**不需要手动重启**。
+
+| 热重载模式 | 行为 |
+|-----------|------|
+| `hybrid`（默认） | 安全字段即时生效，危险字段自动重启 |
+| `hot` | 只即时应用安全字段，危险字段需手动重启 |
+| `restart` | 任何配置变化都自动重启 |
+| `off` | 关闭文件监听，下次手动重启才生效 |
+
+```json5
+{
+  gateway: {
+    reload: { mode: "hybrid", debounceMs: 300 },
+  },
+}
+```
+
+**不需要重启的**：`channels.*`、`agents`、`models`、`hooks`、`cron`、`tools`、`skills`、`bindings`
+**需要重启的**：`gateway.*`（端口、认证、TLS）、`plugins`、`discovery`
+
+---
+
+## 严格校验
+
+配置文件语法错误时，Gateway 拒绝启动，只有诊断命令能用：
+
+```bash
+openclaw doctor        # 查看具体问题
+openclaw doctor --fix   # 自动修复
+openclaw logs          # 查看日志
+openclaw health        # 健康检查
+```
+
+---
+
 ## 下一节
 
 👉 [03-Agent 循环](03-agent-loop.md) — 了解 AI 如何思考和执行

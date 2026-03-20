@@ -32,7 +32,7 @@
   "channels": {
     "discord": {
       "enabled": true,
-      "botToken": "你的 Discord Bot Token",
+      "token": "你的 Discord Bot Token",
       "dmPolicy": "pairing"
     }
   }
@@ -42,7 +42,7 @@
 或使用环境变量：
 
 ```bash
-export DISCORD_BOT_TOKEN="你的 Token"
+export DISCORD_BOT_TOKEN="你的 Token"  # 环境变量名仍然是 DISCORD_BOT_TOKEN
 ```
 
 ---
@@ -79,13 +79,48 @@ openclaw pairing approve discord <配对码>
 
 ---
 
+## 进阶配置（官方文档）
+
+```json5
+{
+  channels: {
+    discord: {
+      enabled: true,
+      token: "your-bot-token",
+      mediaMaxMb: 8,              // Discord 文件大小限制
+      allowBots: false,           // 是否响应其他 Bot 的消息
+      replyToMode: "off",         // off | first | all
+      streaming: "off",           // off | partial | block | progress
+      historyLimit: 20,           // 历史消息加载条数
+      textChunkLimit: 2000,       // 单条消息最大字符数
+      maxLinesPerMessage: 17,     // 超过自动分条
+      // Guild（服务器）配置
+      guilds: {
+        "服务器ID": {
+          requireMention: false,  // 不用 @Bot 也能回复
+          channels: {
+            general: { allow: true },
+            help: { allow: true, requireMention: true },
+          },
+        },
+      },
+    },
+  },
+}
+```
+
+> 来源：[官方配置参考](https://docs.openclaw.ai/gateway/configuration-reference)
+
+---
+
 ## 常见问题
 
 ### Bot 加入服务器后不回复？
 
-1. 确认打开了 **Message Content Intent**
-2. 确认 Gateway 运行中
+1. 确认打开了 **Message Content Intent**（Privileged Gateway Intents）
+2. 确认 Gateway 运行中：`openclaw status`
 3. 确认 Bot 有读写消息的权限
+4. 确认 `guilds` 配置中对应频道 `allow: true`
 
 ---
 

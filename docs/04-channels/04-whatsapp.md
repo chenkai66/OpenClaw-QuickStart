@@ -62,12 +62,53 @@ openclaw status
 
 ---
 
+## 进阶配置（官方文档）
+
+```json5
+{
+  channels: {
+    whatsapp: {
+      dmPolicy: "pairing",
+      allowFrom: ["+8613800138000"],
+      textChunkLimit: 4000,       // 单条消息最大字符数
+      chunkMode: "length",        // length | newline
+      mediaMaxMb: 50,             // 最大文件大小 50MB
+      sendReadReceipts: true,     // 发送已读回执（蓝色双勾）
+      groups: {
+        "*": { requireMention: true },
+      },
+    },
+  },
+}
+```
+
+### 多账户支持
+
+OpenClaw 支持同时连接多个 WhatsApp 账号：
+
+```json5
+{
+  channels: {
+    whatsapp: {
+      accounts: {
+        default: {},       // 默认账号
+        personal: {},      // 个人号
+        biz: {},           // 商业号
+      },
+    },
+  },
+}
+```
+
+> 旧的单账户认证目录会由 `openclaw doctor` 自动迁移到 `whatsapp/default`。
+
 ## 注意事项
 
 - **保持 OpenClaw 运行**：关掉后 WhatsApp 连接会断开
-- **单设备限制**：一个 WhatsApp 账号只能连一个 OpenClaw 实例
-- **凭证文件**：保存在 `~/.openclaw/` 下，迁移服务器时记得备份
-- **多媒体支持**：支持收发图片、语音、视频、文件
+- **单设备限制**：一个 WhatsApp 账号只能连一个 OpenClaw 实例（但支持多账户）
+- **凭证文件**：保存在 `~/.openclaw/credentials/whatsapp/` 下，迁移时记得备份
+- **多媒体支持**：支持收发图片、语音、视频、文件（最大 50MB）
+- **已读回执**：默认开启蓝色双勾，可通过 `sendReadReceipts: false` 关闭
 
 ---
 

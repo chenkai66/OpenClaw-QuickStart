@@ -72,3 +72,79 @@
 ## 返回
 
 👉 [返回目录](../../README.md)
+
+---
+
+## Q7: npm install -g openclaw 报 EACCES 权限不足
+
+```bash
+# 方法一：使用 nvm 管理 Node.js（推荐）
+nvm install 24
+nvm use 24
+npm install -g openclaw
+
+# 方法二：修改 npm 全局目录
+mkdir ~/.npm-global
+npm config set prefix ~/.npm-global
+echo export PATH=~/.npm-global/bin:\$PATH >> ~/.bashrc
+source ~/.bashrc
+npm install -g openclaw
+```
+
+> 不推荐使用 sudo npm install -g，会导致后续权限问题。
+
+---
+
+## Q8: Gateway 启动报 EADDRINUSE
+
+端口 18789 被占用：
+
+```bash
+# 查看占用进程
+lsof -i :18789
+
+# 终止占用进程
+kill -9 <PID>
+
+# 或者换一个端口
+openclaw config set gateway.port 18790
+```
+
+---
+
+## Q9: OpenClaw 支持哪些 AI 模型？
+
+OpenClaw 支持任何 OpenAI 兼容 API，包括：
+
+| 提供商 | 模型 | 说明 |
+|--------|------|------|
+| Anthropic | Claude Sonnet/Opus | 对话质量最佳 |
+| OpenAI | GPT-4o/GPT-5.4 | 多模态能力强 |
+| 通义千问 | qwen-max/qwen-plus | 国内延迟低 |
+| DeepSeek | deepseek-chat | 性价比高 |
+| Google | Gemini 2.0 Flash | 免费额度 |
+| Ollama | 各种开源模型 | 完全本地运行 |
+| OpenRouter | 聚合多模型 | 一个 Key 用多个模型 |
+
+---
+
+## Q10: 配置文件用什么格式？
+
+OpenClaw 配置格式是 **JSON5**（不是纯 JSON）：
+- 支持注释：// 这是注释
+- 支持末尾逗号
+- 支持不带引号的键名
+
+---
+
+## Q11: SOUL.md、USER.md 这些文件有什么区别？
+
+| 文件 | 作用 | 类比 |
+|------|------|------|
+| SOUL.md | AI 人格和价值观 | 性格 |
+| AGENTS.md | 工作流程和行为规范 | 工作手册 |
+| USER.md | 用户信息和偏好 | 用户档案 |
+| HEARTBEAT.md | 自动化巡检任务 | 自主意识 |
+| MEMORY.md | 记忆索引 | 记忆 |
+| IDENTITY.md | 对外显示名称和形象 | 外表 |
+| BOOTSTRAP.md | 首次引导（用完删除） | 出生引导 |

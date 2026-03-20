@@ -9,12 +9,20 @@
 OpenClaw 的 Agent 行为由工作区目录（`~/.openclaw/workspace/`）下的 Markdown 文件控制。每次新会话启动时，Agent 按顺序加载这些文件：
 
 ```
-1. SOUL.md      -> "我是谁？"
-2. USER.md      -> "我服务的人是谁？"
-3. AGENTS.md    -> "我该怎么干活？"（行为手册）
-4. HEARTBEAT.md -> "我有哪些自动化行为？"
-5. MEMORY.md    -> 加载记忆索引
+~/.openclaw/workspace/
+├── SOUL.md         # "我是谁？"— 人格、价值观、沟通风格
+├── USER.md         # "我服务的人是谁？"— 用户偏好和信息
+├── AGENTS.md       # "我该怎么干活？"— 行为准则和工作流
+├── HEARTBEAT.md    # "我有哪些自动化任务？"— 定时巡检
+├── MEMORY.md       # 记忆索引
+├── IDENTITY.md     # "我长什么样？"— 对外显示名称和形象
+├── TOOLS.md        # "我能用什么工具？"— 工具授权清单
+├── BOOTSTRAP.md    # 首次引导（用完自动删除）
+├── memory/         # 日常日志和短期记忆
+└── skills/         # 已安装的技能
 ```
+
+加载顺序：SOUL.md → USER.md → AGENTS.md → 记忆文件和日志 → HEARTBEAT.md
 
 ---
 
@@ -185,6 +193,59 @@ Agent 用这个文件了解你是谁、你有什么偏好。
 ## 最近上下文
 - 详见 memory/YYYY-MM-DD.md 每日日志
 ```
+
+---
+
+## IDENTITY.md — 对外形象
+
+定义 Agent 的对外显示信息——名字、表情、主题。
+
+```markdown
+# Identity
+
+- 姓名：Lobster
+- 物种：AI 助手
+- 风格：硬核极客，话少干活快
+```
+
+**关键区别**：
+- `SOUL.md` 告诉 AI "你是谁"（内在）
+- `IDENTITY.md` 告诉用户 AI "长什么样"（外在）
+
+> 你可以随时调整 AI 的外表，但核心人格保持不变。
+
+---
+
+## TOOLS.md — 工具授权清单
+
+定义 OpenClaw 能用什么工具，相当于"权限清单"。
+
+```markdown
+# Tools
+
+## 社交媒体采集
+- 主阵地：@你的账号
+- 盯盘名单：Web3、AI 赛道关键账号
+
+## 本地存储映射
+- 灵感暂存区：~/.openclaw/workspace/inspiration/
+- 草稿输出目录：~/.openclaw/workspace/Drafts/
+```
+
+> **Tools vs Skills**：Tools 是器官（能做什么），Skills 是教科书（怎么用 Tools 做事）。
+
+---
+
+## BOOTSTRAP.md — 首次引导
+
+全新工作空间的一次性引导文件，引导你完成：
+
+1. 给 AI 起名
+2. 设置人格（写 SOUL.md）
+3. 填写用户信息（写 USER.md）
+4. 选择渠道
+
+> ⚠️ 完成引导后 **BOOTSTRAP.md 会自动删除**——你的 AI 已经有了灵魂，不再是空白状态。
 
 ---
 
