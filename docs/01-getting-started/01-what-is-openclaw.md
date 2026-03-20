@@ -1,3 +1,5 @@
+![OpenClaw Logo](https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.svg)
+
 # 第1章·第1节：OpenClaw 是什么？
 
 > 一句话：OpenClaw 是你自己的 AI 助手，跑在你自己的机器上，能帮你发消息、管邮件、写代码、跑脚本、操控浏览器。
@@ -101,6 +103,31 @@
 | 内存 | 2 GB | 4-8 GB |
 | CPU | 2 核 | 2-4 核 |
 | 存储 | 10 GB SSD | 30-50 GB SSD |
+
+
+---
+
+## 不只是聊天——更多能力
+
+### Canvas 可视化画布
+
+OpenClaw 自带 Canvas 可视化工作区（默认端口 18793），AI 可以直接在浏览器中生成可交互的界面——按钮、表格、表单、图表。
+
+这套系统叫 **A2UI（Agent-to-UI）**：Agent 输出带特殊属性的 HTML，Canvas 渲染成可交互界面。用户点击按钮后，事件传回 Agent 继续处理。支持 macOS、iOS、Android 和 Web 浏览器。
+
+### 语音唤醒
+
+在 macOS / iOS / Android 上，说 **"Hey OpenClaw"** 唤醒助手，或用快捷键按住说话。对话模式（Talk Mode）支持连续对话，你甚至可以打断 AI 的回复。
+
+### 多 Agent 路由
+
+让不同渠道或群组使用**完全不同的 AI 助手实例**：
+
+```bash
+openclaw agent --agent work --message "帮我审查这个 PR"
+openclaw agent --agent home --message "今天晚上吃什么"
+```
+
 
 ---
 

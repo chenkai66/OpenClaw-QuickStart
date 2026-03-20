@@ -119,6 +119,22 @@ v2026.3.7 引入了更强的模型路由机制：
 }
 ```
 
+
+---
+
+## 云平台一键部署
+
+不想自己搭服务器？多个云厂商支持一键部署：
+
+| 平台 | 方式 | 链接 |
+|------|------|------|
+| **阿里云 PAI** | DSW 实例 | [在 DSW 中部署](https://help.aliyun.com/zh/pai/use-cases/deploy-openclaw-in-dsw) |
+| **华为云** | 耀服务器预装镜像 | [部署教程](https://support.huaweicloud.com/bestpractice-flexusl/flexusl_bp_0005.html) |
+| **火山引擎** | 云服务器模板 | [快速部署](https://www.volcengine.com/docs/6396/2197080) |
+
+> 5 分钟就能跑起来，适合不想折腾环境的用户。
+
+
 ---
 
 ## 下一节

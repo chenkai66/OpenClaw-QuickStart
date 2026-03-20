@@ -12,6 +12,8 @@ openclaw dashboard
 
 这会在浏览器中打开控制面板，默认地址：`http://127.0.0.1:18789/`
 
+![Web Dashboard 控制面板](https://datawhalechina.github.io/hello-claw/assets/openclaw-dashboard-browser.CS3vL0pY.png)
+
 ---
 
 ## 远程服务器访问
@@ -27,7 +29,19 @@ ssh -N -L 18789:127.0.0.1:18789 用户名@服务器IP
 
 ---
 
-## Dashboard 功能
+## Dashboard 功能一览
+
+| 功能区 | 说明 |
+|--------|------|
+| **Config** | 可视化编辑配置，保存即生效 |
+| **Conversations** | 查看对话历史、工具调用记录 |
+| **Channels** | 查看已连接渠道状态 |
+| **Sessions** | 管理活跃会话和上下文 |
+| **Skills** | 浏览和管理已安装技能 |
+| **Cron** | 查看和管理定时任务 |
+| **Logs** | 实时查看 Gateway 日志 |
+
+> 发送 `/status` 可快速检查 Gateway 状态
 
 ### 聊天界面
 - 直接在浏览器中和 OpenClaw 对话
@@ -47,6 +61,36 @@ ssh -N -L 18789:127.0.0.1:18789 用户名@服务器IP
 ### 节点管理
 - 查看连接的移动设备
 - 管理 iOS/Android 节点
+
+
+---
+
+## Dashboard 认证
+
+如果 Gateway 配了认证，打开 Dashboard 时需要凭证：
+
+```json
+{
+  "gateway": {
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}",
+      "allowTailscale": true
+    }
+  }
+}
+```
+
+---
+
+## 修改端口
+
+```bash
+openclaw gateway --port 19000
+```
+
+改完后地址变为 `http://localhost:19000`。
+
 
 ---
 

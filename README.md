@@ -1,3 +1,5 @@
+![OpenClaw](https://raw.githubusercontent.com/openclaw/openclaw/main/docs/assets/openclaw-logo-text.svg)
+
 # OpenClaw 完整教程——从零到精通
 
 > **OpenClaw** 是 2026 年最火的开源 AI Agent 平台，GitHub 星标超过 25.1 万，登顶历史榜首。

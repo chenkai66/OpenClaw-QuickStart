@@ -56,3 +56,17 @@
 - 👉 [国内 IM 总览](05-china-im.md)
 - 👉 [微信接入完全指南（WorkBuddy / 企微）](06-wechat-workbuddy.md)（新增）
 - 👉 [钉钉完全教程](../08-dingtalk-complete/01-prerequisites.md)（单独章节）
+
+
+---
+
+## 各大厂商 OpenClaw 适配（2026 年 3 月）
+
+| 厂商 | 方案 | 说明 |
+|------|------|------|
+| **腾讯** | [QClaw / WorkBuddy](https://www.codebuddy.cn/work/) | 官方桌面智能体，一键直连微信、QQ |
+| **钉钉** | 一键创建机器人 | 开放平台原生支持，API 限时免费 |
+| **阿里云** | 百炼 + OpenClaw | Coding Plan 8 模型订阅 |
+| **华为云** | 耀服务器 L 实例 | 预装 OpenClaw 镜像一键部署 |
+| **火山引擎** | 云服务器模板 | 预置 OpenClaw 快速购买 |
+

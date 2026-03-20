@@ -60,3 +60,32 @@ openclaw models list
 ---
 
 *下一节：[架构设计 →](../02-core-concepts/01-architecture.md)*
+
+
+---
+
+## TUI 进阶用法
+
+### 指定思考级别
+
+```bash
+openclaw agent --message "分析这段代码的安全性" --thinking high
+```
+
+### 指定 Agent（多 Agent 路由）
+
+```bash
+openclaw agent --message "查看今天的日程" --agent home
+openclaw agent --message "审查这个 PR" --agent work
+```
+
+### 管道输入
+
+```bash
+# 让 AI 解释一段代码
+cat script.py | openclaw agent --message "解释这段代码"
+
+# 让 AI 分析日志
+openclaw logs --limit 50 --plain | openclaw agent --message "有什么异常？"
+```
+
