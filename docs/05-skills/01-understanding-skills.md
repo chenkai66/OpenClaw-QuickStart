@@ -185,4 +185,4 @@ clawhub update --all
 
 ## 下一节
 
-👉 [02-内置 Skills](02-builtin-skills.md) — 53 个内置 Skills 全解析
+👉 [02-内置 Skills 详解](02-builtin-skills.md) — 53 个内置 Skills 分类详解

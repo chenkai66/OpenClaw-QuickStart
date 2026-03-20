@@ -45,15 +45,21 @@ openclaw-tutorial/
 |   |   +-- 04-environment-vars.md     #   环境变量
 |   +-- 04-channels/                   # 第4章：渠道接入
 |   |   +-- 01-overview.md             #   渠道概览
+|   |   +-- 02-telegram.md             #   Telegram 接入
+|   |   +-- 03-discord.md              #   Discord 接入
+|   |   +-- 04-whatsapp.md             #   WhatsApp 接入
 |   |   +-- 05-china-im.md             #   国内 IM 总览
-|   |   +-- 06-wechat-workbuddy.md     #   ★ 微信接入完全指南（新增）
+|   |   +-- 06-wechat-workbuddy.md     #   ★ 微信接入完全指南
 |   +-- 05-skills/                     # 第5章：Skills 技能
 |   |   +-- 01-understanding-skills.md #   理解 Skills
+|   |   +-- 02-builtin-skills.md       #   53 个内置 Skills 详解
+|   |   +-- 03-skill-management.md     #   技能管理（安装/更新/删除）
 |   |   +-- 04-custom-skills.md        #   自定义 Skills
 |   +-- 06-advanced/                   # 第6章：进阶
 |   |   +-- 01-memory-system.md        #   记忆系统
 |   |   +-- 02-cron-jobs.md            #   定时任务
 |   |   +-- 03-advanced-tips.md        #   进阶技巧
+|   |   +-- 04-multi-agent.md          #   多 Agent 路由
 |   |   +-- 05-mcp-integration.md      #   MCP 协议
 |   +-- 07-use-cases/                  # 第7章：实战项目
 |   |   +-- 01-second-brain.md         #   第二大脑知识系统
