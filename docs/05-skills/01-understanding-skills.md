@@ -105,6 +105,82 @@ Skills 从三个位置加载（优先级从高到低）：
 | 用户全局 | `~/.openclaw/skills/` | 所有项目共享 |
 | 内置 | 随安装包 | 官方 Skills |
 
+
+---
+
+## ClawHub 技能市场
+
+ClawHub 是 OpenClaw 官方的技能市场，截至 2026 年 3 月已收录 **17000+** 技能。
+
+### 基本命令
+
+```bash
+# 安装 ClawHub CLI
+npm i -g clawhub --registry https://registry.npmmirror.com
+
+# 搜索技能
+clawhub search "日历"
+clawhub search "邮件处理"
+
+# 安装技能
+clawhub install <skill-name>
+
+# 批量更新所有技能
+clawhub update --all
+```
+
+> 💡 **懒人操作**：直接在对话中说"帮我安装 Gmail 技能"，AI 会自动执行安装。
+
+---
+
+## Top 20 必装技能清单
+
+### 第一梯队：地基能力（必装）
+
+| 技能 | 功能 | 安装命令 |
+|------|------|---------|
+| **Agent Browser** | 网页自动化（打开、填表、截图） | `clawhub install browser` |
+| **Brave Search** | 联网搜索最新信息 | `clawhub install brave-search` |
+| **Shell** | 终端命令执行 | `clawhub install shell` |
+| **Cron** | 定时任务和提醒 | `clawhub install cron` |
+
+### 第二梯队：聊天入口（选 1 个）
+
+| 技能 | 适合谁 | 安装命令 |
+|------|--------|---------|
+| **Telegram** | 个人用户/海外 | `clawhub install telegram` |
+| **飞书** | 国内团队 | `clawhub install feishu` |
+| **钉钉** | 国内企业 | `clawhub install dingtalk` |
+| **Discord** | 开源社区 | `clawhub install discord` |
+
+### 第三梯队：生产力（按需装）
+
+| 技能 | 功能 | 安装命令 |
+|------|------|---------|
+| **Gmail** | 邮件自动化 | `clawhub install gmail` |
+| **Google Calendar** | 日程管理 | `clawhub install google-calendar` |
+| **GitHub** | 代码仓库管理 | `clawhub install github` |
+| **Notion** | 知识库管理 | `clawhub install notion` |
+| **Obsidian** | 本地笔记管理 | `clawhub install obsidian` |
+
+### 第四梯队：进阶玩法
+
+| 技能 | 功能 | 安装命令 |
+|------|------|---------|
+| **Nodes** | 手机设备联动 | `clawhub install nodes` |
+| **Skill Creator** | 自定义技能封装 | `clawhub install skill-creator` |
+| **Home Assistant** | 智能家居控制 | `clawhub install home-assistant` |
+| **Spotify** | 音乐播放控制 | `clawhub install spotify` |
+| **Twitter/X** | 社媒运营 | `clawhub install twitter` |
+
+### 安装安全提醒
+
+1. **来源验证**：优先选 ClawHub 官方认证、下载量 1000+ 的技能
+2. **权限管控**：对 Browser、Shell 等高危技能开启"确认模式"
+3. **授权谨慎**：涉及 Gmail、GitHub 账号的技能，只勾选必要权限
+4. **定期更新**：每周跑一次 `clawhub update --all`
+
+
 ---
 
 ## 下一节

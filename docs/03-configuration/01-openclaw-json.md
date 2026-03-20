@@ -127,3 +127,45 @@ DashScope 提供通义千问系列模型，也接入了第三方模型（DeepSee
 ---
 
 *下一节：[模型提供商配置 →](02-model-providers.md)*
+
+
+---
+
+## 配置结构总览
+
+`openclaw.json` 的完整顶层结构：
+
+```json
+{
+  "meta": {},          // 元数据（系统自动维护）
+  "wizard": {},        // 向导记录
+  "auth": {},          // 认证配置（API Key 等）
+  "models": {},        // 模型提供商和可用模型
+  "agents": {},        // Agent 配置（模型/工作区/压缩）
+  "channels": {},      // 渠道配置（Telegram/钉钉/微信等）
+  "gateway": {},       // 网关配置（端口/认证/TLS）
+  "memory": {},        // 记忆系统配置
+  "plugins": {},       // 插件配置
+  "tools": {},         // 工具配置
+  "env": {},           // 内联环境变量
+  "bindings": [],      // Agent 绑定（渠道→Agent 映射）
+  "cron": {},          // 定时任务
+  "hooks": {}          // 生命周期钩子
+}
+```
+
+> 💡 **JSON5 语法**：OpenClaw 支持 JSON5，可以写注释、尾逗号、单引号。
+
+---
+
+## 配置编辑方式
+
+| 方式 | 命令 / 入口 | 适合谁 |
+|------|------------|--------|
+| **交互向导** | `openclaw onboard` / `openclaw configure` | 新手 |
+| **CLI 单条** | `openclaw config set agents.defaults.model.primary "openai/gpt-4o"` | 老手 |
+| **Web Dashboard** | 浏览器打开 `http://127.0.0.1:18789` → Config 标签 | 可视化 |
+| **直接编辑** | `vim ~/.openclaw/openclaw.json` | 极客 |
+
+> 配置文件改动后 Gateway **自动热重载**，大部分情况不需要手动重启。
+

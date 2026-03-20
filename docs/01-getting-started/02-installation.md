@@ -161,3 +161,33 @@ systemctl daemon-reload && systemctl enable --now openclaw-gateway
 ---
 
 *下一节：[第一次对话 →](03-first-chat.md)*
+
+
+---
+
+## Docker 安装（适合服务器/NAS）
+
+如果你用 Docker 或群晖/绿联 NAS，有社区维护的一键镜像：
+
+```bash
+# 拉取社区 Docker 镜像（预装钉钉/飞书/QQ/企微等插件）
+docker pull openclaw/openclaw-full:latest
+
+# 启动容器
+docker run -d \
+  --name openclaw \
+  -p 18789:18789 \
+  -v ~/.openclaw:/root/.openclaw \
+  -e DASHSCOPE_API_KEY=sk-xxx \
+  --restart unless-stopped \
+  openclaw/openclaw-full:latest
+```
+
+| 平台 | 说明 |
+|------|------|
+| **群晖 NAS** | Docker 套件中搜索 `openclaw`，直接安装 |
+| **绿联 NAS** | 固件 1.11+ 支持，Docker 中搜索安装 |
+| **阿里云** | [一键部署专题页](https://www.aliyun.com/activity/ecs/clawdbot) |
+
+> 💡 Docker 方案的好处：7x24 小时运行、数据持久化、随时迁移。
+

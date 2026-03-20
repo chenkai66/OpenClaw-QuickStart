@@ -152,6 +152,28 @@ ls -lt ~/.openclaw/agents/main/sessions/ | head
 wc -l ~/.openclaw/workspace/MEMORY.md
 ```
 
+
+---
+
+## Docker / NAS 相关
+
+### 容器内无法访问网络
+
+```bash
+# 检查 DNS
+docker exec openclaw ping api.openai.com
+
+# 如果 DNS 失败，指定 DNS
+docker run --dns 8.8.8.8 ...
+```
+
+### 群晖 NAS 上 OpenClaw 启动失败
+
+1. 确认固件版本 ≥ 1.11
+2. 检查 Docker 内存限制（至少给 2GB）
+3. 查看容器日志：`docker logs openclaw`
+
+
 ---
 
 *下一节：[FAQ →](02-faq.md)*
