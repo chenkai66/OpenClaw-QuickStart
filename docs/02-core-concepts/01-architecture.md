@@ -67,13 +67,14 @@
 - **类比**：Skills 教 AI **怎么做**某件事
 - **示例**：`obsidian`（笔记管理）、`gog`（Google 服务）
 
-### 5. Memory（记忆系统）
+### 5. Memory + ContextEngine（记忆系统）
 - **角色**：长期记忆存储
 - **功能**：跨会话记住用户偏好和上下文
+- **v2026.3.7 新增**：ContextEngine 可插拔上下文引擎，自动管理记忆的保存/检索/压缩
 
 ### 6. Channels（渠道层）
 - **角色**：用户接入点
-- **支持**：Telegram、Discord、WhatsApp、钉钉、飞书、企微等
+- **支持**：Telegram、Discord、WhatsApp、钉钉、飞书、企微、微信（WorkBuddy）、QQ 等
 
 ---
 
