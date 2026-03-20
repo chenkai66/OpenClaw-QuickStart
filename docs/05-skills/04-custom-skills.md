@@ -1,122 +1,356 @@
-# 第5章·第4节：自定义 Skill 开发
+# Chapter 5.4: Writing Custom Skills (With Real Production Examples)
 
-> 教你写自己的 Skill — 比你想象的简单。
+> Actual SKILL.md files from a production OpenClaw deployment
 
----
+## Skill File Structure Recap
 
-## 快速入门：5 分钟写一个 Skill
+Every skill is defined by a `SKILL.md` file in Markdown format. OpenClaw reads these files and loads them into the agent context when relevant.
 
-### 示例：中文技术文章转公众号
-
-```bash
-# 创建 Skill 目录
-mkdir -p ~/.openclaw/skills/wechat-article
+```
+~/.openclaw/skills/
++-- my-custom-skill/
+    +-- SKILL.md          # Required: The skill definition
+    +-- config.json       # Optional: Configuration
+    +-- README.md         # Optional: Documentation
 ```
 
-创建 `SKILL.md`：
+## Real Example 1: Knowledge Sync Agent
+
+This is a real, production SKILL.md that runs hourly via cron job to process conversations:
 
 ```markdown
----
-name: wechat-article
-description: 将技术文章转换为微信公众号风格的文章
----
+# KNOWLEDGE-AGENT Skill
 
-# 技术文章转公众号
+> You are a sub-Agent called by cron jobs, responsible for executing
+> the complete conversation summary data pipeline.
 
-## 使用场景
-当用户说"转公众号风格"、"改成公众号文章"时使用。
+## Important: Cron Job Configuration
 
-## 执行步骤
-1. 阅读原文，提取核心观点
-2. 改写标题：使用吸引眼球的标题格式
-3. 添加开头：用一个引人入胜的问题或故事开头
-4. 改写正文：
-   - 段落短小（3-5行）
-   - 多用类比和比喻
-   - 加入 emoji 适当点缀
-   - 关键句子加粗
-5. 添加结尾：总结 + 互动引导
-6. 输出 Markdown 格式
+**You do NOT need to create or modify cron jobs!** Scheduled tasks
+are managed by the main Agent.
 
-## 风格要求
-- 口语化，像朋友聊天
-- 避免学术腔调
-- 每段话不超过 100 字
-- 标题格式：数字 + 关键词 + 情绪词
-  例如："3 个让你代码速度翻倍的技巧，第2个太实用了！"
+If the user asks to configure cron jobs, tell them:
+
+### Step 1: Find Project Path
+
+\`\`\`bash
+ls -la ~/openclaw/workspace/openclaw-second-brain 2>/dev/null || \
+ls -la /root/openclaw-second-brain 2>/dev/null || \
+find ~ -type d -name "openclaw-second-brain" 2>/dev/null | head -1
+\`\`\`
+
+### Step 2: Create Cron Job
+
+\`\`\`bash
+openclaw cron add \
+  --name "Knowledge Sync" \
+  --cron "0 * * * *" \
+  --session isolated \
+  --message "cd <PROJECT_PATH> && npm run agent:knowledge" \
+  --delivery none
+\`\`\`
+
+## Execution Command
+
+\`\`\`bash
+npm run agent:knowledge
+\`\`\`
+
+This script automatically:
+1. Initialize system - verify config, ensure directories exist
+2. Discover Claude Code conversations - auto-find session files
+3. Convert formats - Claude Code to OpenClaw unified format
+4. Process conversations - generate summaries, intelligent categorization
+5. Convert to Markdown - create/update Notes and Logs
+6. Create backup - auto-backup data
+7. Return structured JSON results
+
+## Conversation Sources
+
+1. **OpenClaw TUI** - ~/.openclaw/agents/main/sessions/*.jsonl
+2. **Claude Code** - ~/.claude/projects/*/xxx.jsonl (auto-converted)
+
+## Output
+
+- Notes: content/notes/
+- Logs: content/logs/
+- Summaries: data/summaries/
 ```
 
-### 测试
+### Key Patterns in This Skill
 
-在 OpenClaw 中说：
-
-```
-使用「技术文章转公众号」Skill，帮我把这篇文章改成公众号风格：
-[粘贴你的技术文章]
-```
+1. **Clear role definition** — "You are a sub-Agent called by cron jobs"
+2. **Boundary setting** — "You do NOT need to create or modify cron jobs"
+3. **Actionable instructions** — Step-by-step commands for users
+4. **Multi-source processing** — Handles both OpenClaw and Claude Code sessions
+5. **Structured output** — JSON result format specified
 
 ---
 
-## 更多示例
+## Real Example 2: Daily Research Agent
 
-### 示例2：每日站会报告生成器
+This agent runs every night to analyze trending topics and generate research reports:
 
 ```markdown
+# RESEARCH-AGENT Skill
+
+> You are a sub-Agent called by cron jobs, responsible for analyzing
+> user interests and generating research reports.
+
+## Execution Command
+
+\`\`\`bash
+npm run agent:research
+\`\`\`
+
+## Workflow
+
+### What the Script Does (Automatic)
+
+1. Get hot topics - summaryRetriever.getTopTopics(10), filter last 7 days
+2. Get hot keywords - summaryRetriever.getTopKeywords(20)
+3. Get statistics - total conversations, topics, domains
+4. Return structured data as JSON
+
+### What the Agent Does (Manual)
+
+1. Analyze data - review top_topics and top_keywords, choose research direction
+2. Internet search - Google, GitHub, HN, Dev.to
+3. Generate report - save to content/reports/YYYY-MM-DD-topic.md
+
+## Report Structure
+
+\`\`\`markdown
 ---
-name: daily-standup
-description: 根据 Git 提交记录自动生成每日站会报告
+date: YYYY-MM-DD
+type: daily-research
+title: Research Topic Title
+tags: [tag1, tag2]
+ai_generated: true
+sources: [url1, url2]
 ---
 
-# 每日站会报告
+# Research Topic Title
 
-## 使用场景
-当用户说"生成站会报告"、"今天的standup"时使用。
+## Research Background
+## Key Findings
+## Technical Deep Analysis
+## Best Practices
+## Recommended Actions
+## References
+\`\`\`
 
-## 执行步骤
-1. 运行 `git log --since="yesterday" --oneline` 获取提交记录
-2. 运行 `git diff --stat HEAD~5` 查看最近修改
-3. 按以下格式生成报告：
+## Notes
 
-## 报告模板
-
-### 昨天完成了什么
-- [根据 git log 总结]
-
-### 今天计划做什么
-- [根据未完成的分支和 TODO 推断]
-
-### 有什么阻碍
-- [如果有未解决的 merge conflict 等，列出来]
+- Script only provides data, does NOT generate the report
+- Agent must do its own internet searches
+- Agent generates and saves the report itself
+- Prioritize topics with most discussion
+- Generate 1 research report per day
 ```
 
-### 示例3：代码审查助手
+### Key Patterns
+
+1. **Clear separation** — script vs agent responsibilities
+2. **Structured output format** — frontmatter + sections template
+3. **One report per day** — prevents overload
+4. **Agent autonomy** — agent decides research direction based on data
+
+---
+
+## Real Example 3: Social Research Agent
+
+An on-demand research agent that uses LLM to analyze user intent:
 
 ```markdown
+# SOCIAL-RESEARCH Skill
+
+> You are a research assistant that uses LLMs to analyze needs
+> and execute community research.
+
+## Intelligent Workflow
+
+### 1. Analyze User Request (LLM)
+
+Input:
+- User research request
+- Recent conversation history (from summary system)
+- User tech stack and interests
+
+Output JSON:
+{
+  "research_type": "trend_analysis" | "tool_comparison" | "best_practices",
+  "search_keywords": ["keyword1", "keyword2"],
+  "platforms": ["reddit", "twitter", "hackernews"],
+  "focus_areas": ["implementation", "UX", "performance"],
+  "report_structure": {
+    "sections": ["Overview", "Discussion", "Findings", "Recommendations"],
+    "depth": "detailed" | "summary"
+  }
+}
+
+### 2. Execute Research (Based on LLM Decision)
+
+Research Types:
+1. Trend Analysis - search 3-month discussions, analyze trends
+2. Tool Comparison - collect real user reviews, compare pros/cons
+3. Best Practices - search practical experience, code examples
+4. Community Opinion - analyze consensus and controversy
+
+### 3. Intelligent Content Integration (LLM)
+
+Input: search results (Reddit, Twitter, HN)
+Output: structured report, key findings, personalized recommendations
+```
+
+### Key Patterns
+
+1. **LLM-driven decision making** — uses AI to analyze user intent
+2. **Dynamic search strategy** — keywords and platforms adapt to query
+3. **Multi-platform search** — Reddit, Twitter, HackerNews
+4. **Personalized output** — adapts to user background
+
 ---
-name: code-review
-description: 对代码进行专业审查，给出改进建议
+
+## Real Example 4: Project Developer Agent
+
+A comprehensive multi-phase project development agent:
+
+```markdown
+# Project Developer Agent
+
+You are a senior project development expert, specializing in
+building monetizable projects from 0 to 1.
+
+## Your Capabilities
+
+### 1. Requirements Analysis
+- Market research and analysis
+- User needs discovery
+- Competitive analysis
+- Business model design
+- MVP planning
+
+### 2. Technical Planning
+- Tech stack selection
+- Architecture design
+- Development plan
+- Risk assessment
+- Cost estimation
+
+### 3. Virtual Team Coordination
+- Product Manager Agent
+- Tech Architect Agent
+- Frontend Developer Agent
+- Backend Developer Agent
+- QA Agent
+- Operations Agent
+
+## Work Phases
+
+### Phase 1: Research (2-4 hours)
+Market analysis, feasibility study, project proposal
+
+### Phase 2: Design (2-3 hours)
+Tech selection, architecture, development plan
+
+### Phase 3: Development (12-16 hours)
+Environment setup, core features, testing, deployment
+
+### Phase 4: Operations (ongoing)
+User acquisition, analytics, iteration
+```
+
+### Key Patterns
+
+1. **Multi-phase workflow** — clear stages with time estimates
+2. **Virtual team roles** — defines specialized sub-agents
+3. **Goal-oriented** — "building monetizable projects"
+4. **Complete lifecycle** — from research to operations
+
 ---
 
-# Code Review
+## Writing Your Own Skill: Template
 
-## 使用场景
-当用户说"review 代码"、"帮我看看这段代码"时使用。
+```markdown
+# MY-SKILL-NAME Skill
 
-## 检查清单
-1. **安全性**：SQL注入、XSS、敏感信息泄露
-2. **性能**：N+1 查询、内存泄漏、不必要的循环
-3. **可读性**：命名规范、注释质量、函数长度
-4. **最佳实践**：错误处理、边界条件、类型安全
-5. **测试**：测试覆盖率、边界测试
+> One-line description of what this skill does
 
-## 输出格式
-- 🔴 严重问题（必须修复）
-- 🟡 建议改进（推荐修复）
-- 🟢 优点（值得表扬的地方）
+## When to Use
+
+Describe the trigger conditions - when should this skill activate?
+
+## Input
+
+What information does the agent need?
+
+| Parameter | Description | Required | Example |
+|-----------|-------------|----------|---------|
+| topic | Research topic | Yes | "React hooks" |
+| depth | Analysis depth | No | "detailed" |
+
+## Workflow
+
+### Step 1: [Action Name]
+Detailed instructions...
+
+### Step 2: [Action Name]
+Detailed instructions...
+
+## Output Format
+
+\`\`\`markdown
+# Output Title
+## Section 1
+## Section 2
+\`\`\`
+
+## Configuration
+
+\`\`\`json
+{
+  "key": "value",
+  "setting": true
+}
+\`\`\`
+
+## Notes
+
+- Important caveat 1
+- Important caveat 2
+```
+
+## Skill Configuration (config.json)
+
+Real example from the Knowledge Agent:
+
+```json
+{
+  "contentDirectories": {
+    "notes": "content/notes",
+    "logs": "content/logs",
+    "reports": "content/reports"
+  },
+  "processing": {
+    "batchSize": 10,
+    "minConversationLength": 50,
+    "similarityThreshold": 0.7
+  },
+  "tagCategories": [
+    "technology",
+    "architecture",
+    "debugging",
+    "learning",
+    "project-management"
+  ],
+  "schedule": {
+    "syncInterval": "0 * * * *",
+    "reportTime": "0 23 * * *"
+  }
+}
 ```
 
 ---
 
-## 下一节
-
-👉 [05-Skills 管理](05-skill-management.md)
+*Next: [Memory System →](../06-advanced/01-memory-system.md)*
