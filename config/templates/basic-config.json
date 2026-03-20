@@ -1,0 +1,21 @@
+{
+  "// 说明": "基础配置模板 — 适合个人使用",
+  "ai": {
+    "provider": "qwen",
+    "model": "qwen-max"
+  },
+  "tools": {
+    "read": { "enabled": true },
+    "write": { "enabled": true },
+    "edit": { "enabled": true },
+    "exec": { "enabled": true },
+    "process": { "enabled": true },
+    "web_search": { "enabled": true },
+    "web_fetch": { "enabled": true },
+    "memory_search": { "enabled": true },
+    "memory_get": { "enabled": true }
+  },
+  "approvals": {
+    "exec": { "enabled": true }
+  }
+}

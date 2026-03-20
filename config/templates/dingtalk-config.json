@@ -1,0 +1,35 @@
+{
+  "// 说明": "钉钉机器人配置模板",
+  "ai": {
+    "provider": "qwen",
+    "model": "qwen-max"
+  },
+  "channels": {
+    "dingtalk": {
+      "enabled": true,
+      "clientId": "替换为你的ClientID",
+      "clientSecret": "替换为你的Secret",
+      "robotCode": "替换为你的RobotCode",
+      "corpId": "替换为你的CorpID",
+      "agentId": "替换为你的AgentID",
+      "dmPolicy": "open",
+      "groupPolicy": "open",
+      "messageType": "markdown",
+      "debug": false
+    }
+  },
+  "tools": {
+    "read": { "enabled": true },
+    "write": { "enabled": true },
+    "exec": { "enabled": true },
+    "web_search": { "enabled": true },
+    "web_fetch": { "enabled": true },
+    "memory_search": { "enabled": true },
+    "memory_get": { "enabled": true },
+    "cron": { "enabled": true },
+    "message": { "enabled": true }
+  },
+  "approvals": {
+    "exec": { "enabled": true }
+  }
+}

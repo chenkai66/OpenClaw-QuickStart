@@ -1,0 +1,50 @@
+{
+  "// 说明": "高级配置模板 — 多渠道 + 定时任务 + 浏览器",
+  "ai": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "apiKey": "替换为你的API Key"
+  },
+  "channels": {
+    "dingtalk": {
+      "enabled": true,
+      "clientId": "替换",
+      "clientSecret": "替换",
+      "robotCode": "替换",
+      "corpId": "替换",
+      "agentId": "替换",
+      "dmPolicy": "open",
+      "groupPolicy": "open",
+      "messageType": "markdown"
+    },
+    "telegram": {
+      "enabled": false,
+      "botToken": "替换为你的Telegram Bot Token"
+    }
+  },
+  "tools": {
+    "read": { "enabled": true },
+    "write": { "enabled": true },
+    "edit": { "enabled": true },
+    "apply_patch": { "enabled": true },
+    "exec": { "enabled": true },
+    "process": { "enabled": true },
+    "web_search": { "enabled": true },
+    "web_fetch": { "enabled": true },
+    "browser": { "enabled": true },
+    "image": { "enabled": true },
+    "memory_search": { "enabled": true },
+    "memory_get": { "enabled": true },
+    "sessions_list": { "enabled": true },
+    "sessions_spawn": { "enabled": true },
+    "message": { "enabled": true },
+    "cron": { "enabled": true },
+    "tts": { "enabled": false }
+  },
+  "approvals": {
+    "exec": { "enabled": true }
+  },
+  "skills": {
+    "allowBundled": ["obsidian", "github"]
+  }
+}
