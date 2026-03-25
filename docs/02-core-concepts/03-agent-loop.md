@@ -77,12 +77,6 @@ Agent 循环可以被多种事件触发：
 
 ---
 
-## 下一节
-
-👉 [04-工作空间文件](04-workspace-files.md) — SOUL.md, USER.md 等核心文件
-
----
-
 ## Lobster Loop（龙虾循环）
 
 OpenClaw 的 Agent 核心运行机制叫 **Lobster Loop**——一种"思考-行动"循环：
@@ -117,3 +111,9 @@ openclaw agent --message "分析这段代码的安全性" --thinking high
 ```
 
 > 思考级别越高，AI 的推理越详细，但耗时和 Token 消耗也越多。
+
+---
+
+## 下一节
+
+👉 [04-工作空间文件](04-workspace-files.md) — SOUL.md, USER.md 等核心文件

@@ -4,78 +4,75 @@
 
 ## 基础问题
 
-### Q: OpenClaw 和 Clawdbot、Moltbot 是什么关系？
+### Q1: OpenClaw 和 Clawdbot、Moltbot 是什么关系？
 **A**: 同一个项目的不同阶段命名。Clawdbot → Moltbot → OpenClaw。
 
-### Q: OpenClaw 免费吗？
+### Q2: OpenClaw 免费吗？
 **A**: OpenClaw 本身是 MIT 开源免费的。但你需要为 AI 模型 API 付费（Qwen 有免费额度）。
 
-### Q: 支持哪些 AI 模型？
+### Q3: 支持哪些 AI 模型？
 **A**: Anthropic Claude、OpenAI GPT-5.4、通义千问 Qwen、Google Gemini 3.1、DeepSeek、小米 MiMo 等。支持任何兼容 OpenAI API 的模型。
 
-### Q: 需要翻墙吗？
+### Q4: 需要翻墙吗？
 **A**: 不一定。如果用 Qwen 模型 + 钉钉渠道，完全不需要翻墙。
 
-### Q: 最新版本是多少？
+### Q5: 最新版本是多少？
 **A**: v2026.3.13（2026年3月13日发布）。推荐使用这个版本或 v2026.3.11。
 
 ---
 
 ## 技术问题
 
-### Q: 数据安全吗？
+### Q6: 数据安全吗？
 **A**: 自托管模式下，数据完全在你的服务器上。AI 模型的 API 调用会将对话内容发送到模型服务商。
 
-### Q: 可以离线使用吗？
+### Q7: 可以离线使用吗？
 **A**: 不可以。需要网络连接来调用 AI 模型 API。
 
-### Q: 支持多人同时使用吗？
+### Q8: 支持多人同时使用吗？
 **A**: 支持。每个用户的每个渠道自动创建独立会话。
 
-### Q: 手机上能用吗？
+### Q9: 手机上能用吗？
 **A**: 可以。通过 Telegram/钉钉/微信等聊天工具，手机上直接使用。
 
-### Q: ContextEngine 是什么？
+### Q10: ContextEngine 是什么？
 **A**: v2026.3.7 引入的可插拔上下文引擎。以前记忆管理是硬编码的，现在可以像装插件一样切换不同的上下文策略（RAG、压缩、知识图谱等），不用改 Agent 配置。
 
 ---
 
 ## 微信 / WorkBuddy 相关
 
-### Q: 怎么用微信和 OpenClaw 对话？
-**A**: 最简单的方式是装腾讯官方的 WorkBuddy（https://www.codebuddy.cn/work/），扫码绑定微信客服号，5 分钟搞定。详见第4章第6节。
+### Q11: 怎么用微信和 OpenClaw 对话？
 
-### Q: WorkBuddy 是什么？
+**A**: 最简单的方式是装腾讯官方的 [WorkBuddy](https://www.codebuddy.cn/work/)，扫码绑定微信客服号，5 分钟搞定。详见第4章第6节。
+
+### Q12: WorkBuddy 是什么？
 **A**: 腾讯出品的桌面智能体，兼容 OpenClaw 技能。通过企业微信的微信客服号通道，让你在个人微信里直接和 AI 对话。
 
-### Q: WorkBuddy 关掉电脑还能用吗？
+### Q13: WorkBuddy 关掉电脑还能用吗？
 **A**: 不行，WorkBuddy 需要电脑保持运行。如果需要 7x24 服务，用企业微信官方插件 + 云服务器部署 OpenClaw。
 
-### Q: 企业微信有官方 OpenClaw 支持吗？
+### Q14: 企业微信有官方 OpenClaw 支持吗？
 **A**: 有。2026年3月企业微信官方发布了 OpenClaw 适配插件（wecom-openclaw-plugin），支持长连接智能机器人，可用消息、文档、日程、会议等接口。
 
 ---
 
 ## 钉钉相关
 
-### Q: 需要公网 IP 吗？
+### Q15: 需要公网 IP 吗？
 **A**: 使用 Stream 模式不需要。
 
-### Q: 可以添加到群里吗？
+### Q16: 可以添加到群里吗？
 **A**: 可以。在群设置中添加机器人即可。
 
-### Q: 消息有延迟怎么办？
+### Q17: 消息有延迟怎么办？
 **A**: 通常是 AI 模型处理时间。可以启用流式输出减少等待感。
 
 ---
 
-## 返回
+## 安装与运行
 
-👉 [返回目录](../../README.md)
-
----
-
-## Q7: npm install -g openclaw 报 EACCES 权限不足
+### Q18: `npm install -g openclaw` 报 EACCES 权限不足
 
 ```bash
 # 方法一：使用 nvm 管理 Node.js（推荐）
@@ -93,9 +90,7 @@ npm install -g openclaw
 
 > 不推荐使用 sudo npm install -g，会导致后续权限问题。
 
----
-
-## Q8: Gateway 启动报 EADDRINUSE
+### Q19: Gateway 启动报 EADDRINUSE
 
 端口 18789 被占用：
 
@@ -110,9 +105,7 @@ kill -9 <PID>
 openclaw config set gateway.port 18790
 ```
 
----
-
-## Q9: OpenClaw 支持哪些 AI 模型？
+### Q20: OpenClaw 支持哪些 AI 模型？
 
 OpenClaw 支持任何 OpenAI 兼容 API，包括：
 
@@ -126,18 +119,14 @@ OpenClaw 支持任何 OpenAI 兼容 API，包括：
 | Ollama | 各种开源模型 | 完全本地运行 |
 | OpenRouter | 聚合多模型 | 一个 Key 用多个模型 |
 
----
-
-## Q10: 配置文件用什么格式？
+### Q21: 配置文件用什么格式？
 
 OpenClaw 配置格式是 **JSON5**（不是纯 JSON）：
 - 支持注释：// 这是注释
 - 支持末尾逗号
 - 支持不带引号的键名
 
----
-
-## Q11: SOUL.md、USER.md 这些文件有什么区别？
+### Q22: SOUL.md、USER.md 这些文件有什么区别？
 
 | 文件 | 作用 | 类比 |
 |------|------|------|
@@ -148,3 +137,7 @@ OpenClaw 配置格式是 **JSON5**（不是纯 JSON）：
 | MEMORY.md | 记忆索引 | 记忆 |
 | IDENTITY.md | 对外显示名称和形象 | 外表 |
 | BOOTSTRAP.md | 首次引导（用完删除） | 出生引导 |
+
+---
+
+👉 [返回目录](../../README.md)

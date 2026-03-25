@@ -11,7 +11,7 @@
 
 一套 **从 0 到 100** 的 OpenClaw 中文教程，包括：
 
-- **10 个章节**的完整文档：从入门到进阶
+- **9 个章节**的完整文档：从入门到进阶
 - **8 个实战示例**：可直接运行的代码
 - **配置模板**：拿来就用的配置文件
 - **钉钉对接**：手把手完整教程
@@ -43,6 +43,7 @@ openclaw-tutorial/
 |   |   +-- 02-model-providers.md      #   模型提供商配置
 |   |   +-- 03-tools-config.md         #   26 个 Tools 详解
 |   |   +-- 04-environment-vars.md     #   环境变量
+|   |   +-- 05-coding-plan.md          #   百炼 Coding Plan 接入指南
 |   +-- 04-channels/                   # 第4章：渠道接入
 |   |   +-- 01-overview.md             #   渠道概览
 |   |   +-- 02-telegram.md             #   Telegram 接入
@@ -56,20 +57,20 @@ openclaw-tutorial/
 |   |   +-- 03-skill-management.md     #   技能管理（安装/更新/删除）
 |   |   +-- 04-custom-skills.md        #   自定义 Skills
 |   +-- 06-advanced/                   # 第6章：进阶
-|   |   +-- 01-memory-system.md        #   记忆系统
+|   |   +-- 01-memory-system.md        #   记忆系统 + ContextEngine
 |   |   +-- 02-cron-jobs.md            #   定时任务
 |   |   +-- 03-advanced-tips.md        #   进阶技巧
 |   |   +-- 04-multi-agent.md          #   多 Agent 路由
 |   |   +-- 05-mcp-integration.md      #   MCP 协议
 |   +-- 07-use-cases/                  # 第7章：实战项目
-|   |   +-- 01-second-brain.md         #   第二大脑知识系统
+|   |   +-- 01-second-brain.md         #   第二大脑知识系统（概览）
+|   |   +-- 02-knowledge-agents.md     #   知识 Agent 详解
+|   |   +-- 03-memory-architecture.md  #   记忆架构与生产实践
 |   +-- 08-dingtalk-complete/          # 第8章：钉钉对接
 |   |   +-- 01~05                      #   5 节保姆级教程
-|   +-- 09-troubleshooting/           # 第9章：故障排查
-|   |   +-- 01-common-issues.md        #   常见问题
-|   |   +-- 02-faq.md                  #   FAQ
-|   +-- 10-coding-plan/               # 第10章：百炼 Coding Plan
-|       +-- 01-coding-plan-guide.md    #   Coding Plan 接入指南
+|   +-- 09-troubleshooting/           # 第9章：故障排查与 FAQ
+|       +-- 01-common-issues.md        #   常见问题
+|       +-- 02-faq.md                  #   FAQ
 ```
 
 ---
@@ -98,14 +99,13 @@ openclaw gateway start
 |------|------|---------|
 | 入门 | 第1章：安装 → 第一次对话 → Web 面板 | 30 分钟 |
 | 理解 | 第2章：架构 → Gateway → Agent 循环 | 1 小时 |
-| 配置 | 第3章：模型 → Tools → 环境变量 | 1 小时 |
+| 配置 | 第3章：模型 → Tools → 环境变量 → Coding Plan | 1 小时 |
 | 接入 | 第4章：渠道接入（含微信 WorkBuddy） | 30 分钟 |
 | 技能 | 第5章：理解 Skills → 自定义 Skills | 1 小时 |
 | 进阶 | 第6章：记忆 + ContextEngine → 定时任务 → MCP | 2 小时 |
 | 实战 | 第7章：第二大脑知识系统 | 2 小时 |
 | 钉钉 | 第8章：钉钉完整对接 | 1 小时 |
 | 排错 | 第9章：常见问题 + FAQ | 按需 |
-| 百炼 | 第10章：Coding Plan 8 模型方案 | 30 分钟 |
 
 ---
 
@@ -129,3 +129,11 @@ openclaw gateway start
 - [WorkBuddy](https://www.codebuddy.cn/work/) — 腾讯官方桌面智能体，微信直连
 - [企业微信 OpenClaw 插件](https://work.weixin.qq.com/nl/index/openclaw) — 企微官方适配
 - [阿里云百炼](https://bailian.console.aliyun.com/) — Coding Plan 订阅
+
+---
+
+## 参考引用
+
+本教程参考了以下资源：
+
+- [Hello Claw](https://datawhalechina.github.io/hello-claw/cn/) — Datawhale 社区 OpenClaw 中文教程

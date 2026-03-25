@@ -6,9 +6,26 @@
 
 ## TUI 是什么
 
-TUI（Terminal User Interface）就是在终端里跟 OpenClaw 交互的界面，支持完整的 Agent 能力：工具调用、文件操作、代码执行等。
+TUI（Terminal User Interface）就是在终端里跟 OpenClaw 交互的界面，
+支持完整的 Agent 能力：工具调用、文件操作、代码执行等。
+
+下面是 TUI 的基本交互流程：
+
+```mermaid
+graph TB
+    A[用户输入消息] --> B[OpenClaw TUI 接收]
+    B --> C[Agent 解析意图]
+    C --> D{需要调用工具?}
+    D -->|是| E[调用 Tools]
+    E --> F[返回执行结果]
+    F --> C
+    D -->|否| G[生成回复]
+    G --> H[终端输出结果]
+    H --> A
+```
 
 启动后大概长这样：
+
 ```
 🦞 OpenClaw 2026.x.x
 session agent:main:main
@@ -59,11 +76,6 @@ openclaw models list
 
 ---
 
-*下一节：[架构设计 →](../02-core-concepts/01-architecture.md)*
-
-
----
-
 ## TUI 进阶用法
 
 ### 指定思考级别
@@ -89,3 +101,6 @@ cat script.py | openclaw agent --message "解释这段代码"
 openclaw logs --limit 50 --plain | openclaw agent --message "有什么异常？"
 ```
 
+---
+
+*下一节：[架构设计 →](../02-core-concepts/01-architecture.md)*

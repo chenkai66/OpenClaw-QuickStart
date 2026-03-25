@@ -1,4 +1,4 @@
-# 第10章：百炼 Coding Plan 接入指南
+# 第3章·第5节：百炼 Coding Plan 接入指南
 
 > Coding Plan 是阿里云百炼推出的编程工具订阅方案，200 元/月包含 8 个模型，性价比很高。
 
@@ -210,4 +210,4 @@ openclaw tui
 
 ---
 
-*下一节：[进阶技巧 →](../06-advanced/03-advanced-tips.md)*
+*上一节：[环境变量](04-environment-vars.md) | 下一节：[第4章 渠道接入 →](../04-channels/01-overview.md)*

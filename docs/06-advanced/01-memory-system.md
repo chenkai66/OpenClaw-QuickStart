@@ -157,9 +157,6 @@ ls ~/.openclaw/agents/main/sessions/*.jsonl | wc -l
 5. **每周维护**：清理过期条目
 6. **定期备份**：`cp -r ~/.openclaw/ ~/.openclaw-backup-$(date +%Y%m%d)`
 
----
-
-*下一节：[定时任务 →](02-cron-jobs.md)*
 
 ---
 
@@ -204,3 +201,9 @@ afterTurn   → 每轮对话后的后处理
 ```
 
 > 如果你之前配了 `memoryFlush`、`memorySearch` 等参数，升级后仍然兼容，但建议迁移到新的 ContextEngine 配置。
+
+
+---
+
+*下一节：[定时任务 →](02-cron-jobs.md)*
+
