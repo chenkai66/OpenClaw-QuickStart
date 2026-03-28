@@ -140,4 +140,6 @@ OpenClaw 配置格式是 **JSON5**（不是纯 JSON）：
 
 ---
 
+👉 [生产环境踩坑指南](03-production-pitfalls.md) — 长期运行 Agent 的深水区避坑经验
+
 👉 [返回目录](../../README.md)

@@ -62,6 +62,7 @@ openclaw-tutorial/
 |   |   +-- 03-advanced-tips.md        #   进阶技巧
 |   |   +-- 04-multi-agent.md          #   多 Agent 路由
 |   |   +-- 05-mcp-integration.md      #   MCP 协议
+|   |   +-- 06-best-practices.md      #   Agent 设计哲学与最佳实践
 |   +-- 07-use-cases/                  # 第7章：实战项目与应用案例
 |   |   +-- 01-overview.md             #   章节总览与通用前置条件
 |   |   +-- 02-second-brain.md         #   第二大脑知识系统
@@ -74,6 +75,7 @@ openclaw-tutorial/
 |   +-- 09-troubleshooting/           # 第9章：故障排查与 FAQ
 |       +-- 01-common-issues.md        #   常见问题
 |       +-- 02-faq.md                  #   FAQ
+|       +-- 03-production-pitfalls.md  #   生产环境踩坑指南
 ```
 
 ---
@@ -105,10 +107,10 @@ openclaw gateway start
 | 配置 | 第3章：模型 → Tools → 环境变量 → Coding Plan | 1 小时 |
 | 接入 | 第4章：渠道接入（含微信 WorkBuddy） | 30 分钟 |
 | 技能 | 第5章：理解 Skills → 自定义 Skills | 1 小时 |
-| 进阶 | 第6章：记忆 + ContextEngine → 定时任务 → MCP | 2 小时 |
+| 进阶 | 第6章：记忆 + ContextEngine → 定时任务 → MCP → 最佳实践 | 2 小时 |
 | 实战 | 第7章：6 个实战案例（知识系统/简报/运维/写作/助理） | 3 小时 |
 | 钉钉 | 第8章：钉钉完整对接 | 1 小时 |
-| 排错 | 第9章：常见问题 + FAQ | 按需 |
+| 排错 | 第9章：常见问题 + FAQ + 生产环境踩坑指南 | 按需 |
 
 ---
 

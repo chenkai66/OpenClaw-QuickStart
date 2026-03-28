@@ -140,6 +140,6 @@ mcporter list
 
 ---
 
-## 下一章
+## 下一节
 
-👉 [第7章：实战项目](../07-use-cases/01-second-brain.md) — 打造第二大脑
+👉 [Agent 设计哲学与最佳实践](06-best-practices.md) — 知识体系、记忆分层、协作协议的设计原则
